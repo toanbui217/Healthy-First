@@ -40,7 +40,7 @@
     </div>
     <div class="form-group">
         <label>Certification Number</label>
-        <input type="text" class="form-control" name="certification_number" placeholder="Certification_number" value="{{foodfacility.certification_number}}">
+        <input type="text" class="form-control" name="certification" placeholder="Certification" value="{{foodfacility.certification}}">
         <div class="text-danger">
             {{foodfacility.emailError}}</div>
     </div>

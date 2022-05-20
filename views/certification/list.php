@@ -1,4 +1,4 @@
-<h3><a class="btn btn-secondary" href="/foodfacility"><i class="fa fa-plus"></i> Create New</a> FoodFacility List</h3>
+<h3><a class="btn btn-secondary" href="/certification"><i class="fa fa-plus"></i> Create New</a> Certification List</h3>
 <table class="table table-striped">
     <thead>
         <tr>
@@ -25,8 +25,8 @@
             <td>{{this.certification_number}}</td>
             
             <td>
-                <a href="/foodfacility/{{this._id}}"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></a>
-                <a href="/foodfacility/delete/{{this._id}}" onclick="return confirm('Are you sure to delete this record ?');"><i class="fa fa-trash fa-lg" aria-hidden="true"></i></a>
+                <a href="/certification/{{this._id}}"><button type="submit">update</button></a>
+                <a href="/certification/delete/{{this._id}}" onclick="return confirm('Are you sure to delete this record ?');"> <button type="submit">delete</button></a> 
             </td>
         </tr>
         {{/each}}
