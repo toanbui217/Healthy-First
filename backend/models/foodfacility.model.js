@@ -29,13 +29,16 @@ var addressSchema = new mongoose.Schema({
                     maxlength: 30,
           },
 });
-var checkconditionSchema=new mongoose.Schema({
-    decision_date:Date,
-    conduct_date:Date,
-    end_date:Date, 
-    announcement_date:Date ,
-    foodfacility_number: { type: Schema.Types.ObjectId, ref: "FoodFacility" },
-})
+var checkconditionSchema = new mongoose.Schema({
+          decision_date: Date,
+          conduct_date: Date,
+          end_date: Date,
+          announcement_date: Date,
+          foodfacility_number: {
+                    type: Schema.Types.ObjectId,
+                    ref: "FoodFacility",
+          },
+});
 var certificationSchema = new mongoose.Schema({
           _id: Schema.Types.ObjectId,
           certification_number: {
@@ -49,57 +52,68 @@ var certificationSchema = new mongoose.Schema({
           },
           expiration_date: {
                     type: Date,
-          }
+          },
+          withdrawal_date: {
+                    type: Date,
+          },
 });
 //fullname address phone_number business_type certification
-var foodfacilitySchema = new mongoose.Schema({
-          fullname: {
-                    type: String,
-                    required: "This field is required.",
-                    lowercase: true,
+var foodfacilitySchema = new mongoose.Schema(
+          {
+                    fullname: {
+                              type: String,
+                              required: "This field is required.",
+                              lowercase: true,
+                    },
+                    address: addressSchema,
+                    phone_number: {
+                              type: String,
+                              minlength: 5,
+                              maxlength: 15,
+                              lowercase: true,
+                    },
+                    business_type: {
+                              //sản xuất thực phẩm và/hoặc dịch vụ ăn uống
+                              type: [String],
+                              lowercase: true,
+                              // lieu 5 30 cua tung string hay cua ca
+                              minlength: 5,
+                              maxlength: 30,
+                    },
+                    environment: {
+                              type: String,
+                    },
+                    appliances: {
+                              type: String,
+                    },
+                    water_source: {
+                              type: String,
+                    },
+                    ingredients: {
+                              type: String,
+                    },
+                    food_preservation: {
+                              type: String,
+                    },
+                    waste_treatment: {
+                              type: String,
+                    },
+                    owners: {
+                              type: String,
+                    },
+                    processing: {
+                              type: String,
+                    },
+                    business_paper: {
+                              type: String,
+                    },
+                    certification: {
+                              type: Schema.Types.ObjectId,
+                              ref: "Certification",
+                    },
           },
-          address: addressSchema,
-          phone_number: {
-                    type: String,
-                    minlength: 5,
-                    maxlength: 15,
-                    lowercase: true,
-          },
-          business_type: {
-                    //sản xuất thực phẩm và/hoặc dịch vụ ăn uống
-                    type: [String],
-                    lowercase: true,
-                    // lieu 5 30 cua tung string hay cua ca
-                    minlength: 5,
-                    maxlength: 30,
-          },
-          environment: {
-                    type: String,
-          },
-          appliances: {
-                    type: String,
-          },
-          water_source: {
-                    type: String,
-          },
-          ingredients: {
-                    type: String,
-          },
-          food_preservation: {
-                    type: String,
-          },
-          waste_treatment: {
-                    type: String,
-          },
-          owners: {
-                    type: String,
-          },
-          processing: {
-                    type: String,
-          },
-          certification: { type: Schema.Types.ObjectId, ref: "Certification" },
-            
-},{ timestamps: true } );
+          { timestamps: true }
+);
 //certification: mongoose.Schema.Types.ObjectID
 mongoose.model("FoodFacility", foodfacilitySchema);
 mongoose.model("Certification", certificationSchema);

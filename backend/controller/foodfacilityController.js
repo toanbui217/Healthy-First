@@ -71,6 +71,29 @@ router.get("/list", (req, res) => {
                     }
           });
 });
+//get ;ist limit 5
+router.get("/listlimit", (req, res) => {
+    var page_number = req.body.page_number;
+    FoodFacility.find((err, docs) => {
+              if (!err) {
+                        //       res.render("foodfacility/list", {
+
+                        //                 list: docs.map((doc) => doc.toJSON()),
+                        //       });
+                        list: docs.map((doc) => doc.toJSON());
+                        res.status(200).send(
+                                  docs.map((doc) => doc.toJSON())
+                        );
+
+                        //  res.json(docs.map((doc) => doc.toJSON()));
+              } else {
+                        console.log(
+                                  "Error in retrieving foodfacility list :" +
+                                            err
+                        );
+              }
+    }).limit(5);
+});
 function createMultipleFoodFacilityFromArray(foodFacilityList) {
           const forLoop = async () => {
                     for (let food of foodfacilityList) {
