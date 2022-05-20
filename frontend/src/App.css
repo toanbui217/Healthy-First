@@ -1,0 +1,21 @@
+.app {
+  height: 100vh;
+  overflow-y: hidden;
+  background-color: var(--app-coconut);
+}
+
+.app__body {
+  display: flex;
+  height: 90vh;
+  overflow-y: hidden;
+}
+
+@media (max-width: 320px) {
+  .app {
+    overflow-y: scroll;
+  }
+
+  .app__body {
+    display: block;
+  }
+}

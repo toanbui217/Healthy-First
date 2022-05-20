@@ -1,0 +1,26 @@
+.about {
+  flex: 1;
+  min-width: max-content;
+  overflow: hidden;
+  padding-left: 30px;
+  padding-right: 30px;
+  margin-left: auto;
+  margin-right: auto;
+  height: 90vh;
+  background-color: var(--app-coconut);
+}
+
+.about__header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--app-coconut);
+  padding-bottom: 16px;
+}
+
+.about__header>div>h2 {
+  font-weight: 500;
+  font-size: 26px;
+  padding: 24px 12px 20px;
+  color: var(--app-black);
+}
