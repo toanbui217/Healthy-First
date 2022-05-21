@@ -56,6 +56,9 @@ var certificationSchema = new mongoose.Schema({
           withdrawal_date: {
                     type: Date,
           },
+          status: {
+            type: Date,
+  },
 });
 //fullname address phone_number business_type certification
 var foodfacilitySchema = new mongoose.Schema(
@@ -82,30 +85,39 @@ var foodfacilitySchema = new mongoose.Schema(
                     },
                     environment: {
                               type: String,
+                              lowercase: true,
                     },
                     appliances: {
                               type: String,
+                              lowercase: true,
                     },
                     water_source: {
                               type: String,
+                              lowercase: true,
                     },
                     ingredients: {
                               type: String,
+                              lowercase: true,
                     },
                     food_preservation: {
                               type: String,
+                              lowercase: true,
                     },
                     waste_treatment: {
                               type: String,
+                              lowercase: true,
                     },
                     owners: {
                               type: String,
+                              lowercase: true,
                     },
                     processing: {
                               type: String,
+                              lowercase: true,
                     },
                     business_paper: {
                               type: String,
+                              lowercase: true,
                     },
                     certification: {
                               type: Schema.Types.ObjectId,

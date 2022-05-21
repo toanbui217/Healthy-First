@@ -17,7 +17,37 @@ describe('Good Home Routes', function () {
     // "phone_number":"129321",
     // "business_type":["an uong ","kinh doanh"],
     // "certification_number":"092126"
-    
+    const query1=[{
+            "fullname": "8",
+            "address" :"han noi",
+            "phone_number":"129321",
+            "business_type":["kinh doanh"],
+            "certification_number":"092126",
+            "appliances" :"dat yeu cau",
+            "water_source": "dat yeu cau",
+            "ingredients" :"dat yeu cau",
+            "food_preservation": "dat yeu cau"
+},{
+    "fullname": "10",
+    "address" :"han noi",
+    "phone_number":"129321",
+    "business_type":["kinh doanh"],
+    "certification_number":"092126",
+    "appliances" :"dat yeu cau",
+    "water_source": "dat yeu cau",
+    "ingredients" :"dat yeu cau",
+    "food_preservation": "dat yeu cau"
+},{
+    "fullname": "9",
+    "address" :"hai phong",
+    "phone_number":"129321",
+    "business_type":["kinh doanh"],
+    "certification_number":"092126",
+    "appliances" :"dat yeu cau",
+    "water_source": "dat yeu cau",
+    "ingredients" :"dat yeu cau",
+    "food_preservation": "dat yeu cau"
+}]
     const query = {
         "fullname": "dfghjk",
         "address" :"han noi",

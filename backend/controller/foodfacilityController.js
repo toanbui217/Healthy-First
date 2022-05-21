@@ -30,9 +30,23 @@ router.post("/", (req, res) => {
                     fullname: req.body.fullname,
                     address: {
                               street: req.body.address,
+                              town:req.body.town,
+                              district:req.body.district ,
+
+                    
                     },
                     phone_number: req.body.phone_number,
                     business_type: req.body.business_type,
+                    environment: req.body.environment,
+                    appliances: req.body.appliances,
+                    water_source: req.body.water_source,
+                    ingredients: req.body.ingredients,
+                    food_preservation: req.body.food_preservation,
+                    waste_treatment: req.body.waste_treatment,
+                    owners: req.body.owners,
+                    processing: req.body.processing,
+                    business_paper: req.body.business_paper,
+
                     certification: certi._id,
           });
           // foodfacility.save();
@@ -72,27 +86,72 @@ router.get("/list", (req, res) => {
           });
 });
 //get ;ist limit 5
+//FoodFacility.findOne({ fullname: "cua hang oc" })
+//                .populate("certification")
+//                .exec(function (err, foodfacility) {
+//                          if (err) return console.log(
+//                               "Error during record insertion : " + err
+//                     );
+//                          console.log(foodfacility);
+//      });
+
+// Thống kê số lượng giấy chứng nhận cấp theo thời gian là loại hình cơ sở (sản xuất thực phẩm hay dịch vụ ăn uống).
+router.get("/listbusiness", (req, res) => {
+       fullname= req.body.fullname,
+    address = req.body.address,
+    
+    phone_number= req.body.phone_number,
+    business_type= req.body.business_type,
+    environment= req.body.environment,
+    appliances= req.body.appliances,
+    water_source= req.body.water_source,
+    ingredients= req.body.ingredients,
+    food_preservation= req.body.food_preservation,
+    waste_treatment= req.body.waste_treatment,
+    owners= req.body.owners,
+    processing= req.body.processing,
+    business_paper= req.body.business_paper,
+          FoodFacility.find(req.body)
+                    .populate("certification")
+                    .sort("MFG")
+                    .then((data) => {
+                              res.send(data);
+                    })
+                    .catch((err) => {
+                              res.send(err);
+                    });
+
+          //   FoodFacility.find({ business_type: { $in: "kinh doanh" } })
+          //             .populate("certification").sort("MFG")
+          //             .then((data) => {
+          //                       res.send(data);
+          //             })
+          //             .catch((err) => {
+          //                       res.send(err);
+          //             });
+});
+// lay n ban ghi bat dau tu trang
 router.get("/listlimit", (req, res) => {
-    var page_number = req.body.page_number;
-    FoodFacility.find((err, docs) => {
-              if (!err) {
-                        //       res.render("foodfacility/list", {
+          var page_number = req.body.page_number;
+          FoodFacility.find((err, docs) => {
+                    if (!err) {
+                              //       res.render("foodfacility/list", {
 
-                        //                 list: docs.map((doc) => doc.toJSON()),
-                        //       });
-                        list: docs.map((doc) => doc.toJSON());
-                        res.status(200).send(
-                                  docs.map((doc) => doc.toJSON())
-                        );
+                              //                 list: docs.map((doc) => doc.toJSON()),
+                              //       });
+                              list: docs.map((doc) => doc.toJSON());
+                              res.status(200).send(
+                                        docs.map((doc) => doc.toJSON())
+                              );
 
-                        //  res.json(docs.map((doc) => doc.toJSON()));
-              } else {
-                        console.log(
-                                  "Error in retrieving foodfacility list :" +
-                                            err
-                        );
-              }
-    }).limit(5);
+                              //  res.json(docs.map((doc) => doc.toJSON()));
+                    } else {
+                              console.log(
+                                        "Error in retrieving foodfacility list :" +
+                                                  err
+                              );
+                    }
+          }).limit(5);
 });
 function createMultipleFoodFacilityFromArray(foodFacilityList) {
           const forLoop = async () => {
@@ -133,11 +192,11 @@ function createMultipleFoodFacilityFromArray(foodFacilityList) {
 }
 ////
 router.post("/insertmultiphe", (req, res) => {
-          var foodfacilityList = req.body.foodfacilityList;
+          var foodfacilityList = req.body;
           const forLoop = async (_) => {
                     // for (var index = 0; index < studentList.length; index++) {
-                    //    var stu = studentList[index];
-                    for await (let food of studentList) {
+                    //    var food = foodfacilityList[index];
+                    for (let food of foodfacilityList) {
                               var certi = new Certification({
                                         _id: new mongoose.Types.ObjectId(),
                                         certification_number:
@@ -155,8 +214,7 @@ router.post("/insertmultiphe", (req, res) => {
                                         appliances: food.appliances,
                                         water_source: food.water_source,
                                         ingredients: food.ingredients,
-                                        food_preservation:
-                                                  food.food_preservation,
+                                        food_preservation:food.food_preservation,
                                         waste_treatment: food.waste_treatment,
                                         owners: food.owners,
                                         processing: food.processing,
@@ -176,7 +234,7 @@ router.post("/insertmultiphe", (req, res) => {
           res.send({
                     message:
                               "successfully added " +
-                              studentList.length +
+                              foodfacilityList.length +
                               " students",
           });
 });
@@ -431,37 +489,37 @@ async function insertRecord(req, res) {
 // //         console.log(fooodfacility1 );
 
 // // }
-// function updateRecord(req, res) {
-//           FoodFacility.findOneAndUpdate(
-//                     { _id: req.body._id },
-//                     req.body,
-//                     { new: true },
-//                     (err, doc) => {
-//                               if (!err) {
-//                                         //console.log(req.body._id);
-//                                         res.redirect("foodfacility/list");
-//                               } else {
-//                                         if (err.name == "ValidationError") {
-//                                                   handleValidationError(
-//                                                             err,
-//                                                             req.body
-//                                                   );
-//                                                   res.render(
-//                                                             "foodfacility/addOrEdit",
-//                                                             {
-//                                                                       viewTitle: "Update FoodFacility",
-//                                                                       foodfacility: req.body,
-//                                                             }
-//                                                   );
-//                                         } else
-//                                                   console.log(
-//                                                             "Error during record update : " +
-//                                                                       err
-//                                                   );
-//                               }
-//                     }
-//           );
-// }
+function updateRecord(req, res) {
+          FoodFacility.findOneAndUpdate(
+                    { _id: req.body._id },
+                    req.body,
+                    { new: true },
+                    (err, doc) => {
+                              if (!err) {
+                                        //console.log(req.body._id);
+                                        res.redirect("foodfacility/list");
+                              } else {
+                                        if (err.name == "ValidationError") {
+                                                  handleValidationError(
+                                                            err,
+                                                            req.body
+                                                  );
+                                                  res.render(
+                                                            "foodfacility/addOrEdit",
+                                                            {
+                                                                      viewTitle: "Update FoodFacility",
+                                                                      foodfacility: req.body,
+                                                            }
+                                                  );
+                                        } else
+                                                  console.log(
+                                                            "Error during record update : " +
+                                                                      err
+                                                  );
+                              }
+                    }
+          );
+}
 // router.get("/list", (req, res) => {
 //           FoodFacility.find((err, docs) => {
 //                     if (!err) {
