@@ -4,10 +4,13 @@ const mongoose = require("mongoose");
 const FoodFacility = mongoose.model("FoodFacility");
 const Certification = mongoose.model("Certification");
 const excelToJson = require("convert-excel-to-json");
+const ObjectId = require('mongodb').ObjectId;
 
 router.post("/", (req, res) => {
           //fullname address phone_number business_type certification
           //return res.status(400).send(req.body);
+          var oneYearFromNow = new Date();
+          oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
           if (
                     !req.body.fullname ||
                     !req.body.address ||
@@ -22,18 +25,21 @@ router.post("/", (req, res) => {
           }
 
           const certi = new Certification({
-                    _id: new mongoose.Types.ObjectId(),
-                    certification_number: req.body.certification,
+                    _id: ObjectId(),
+                    //req.body.certification_number
+                    certification_number: req.body.certification_number,
+                   
+                    expiration_date:oneYearFromNow ,
+                    status :"cap moi"
           });
           certi.save();
+          console.log(certi._id);
           const foodfacility = new FoodFacility({
                     fullname: req.body.fullname,
                     address: {
                               street: req.body.address,
-                              town:req.body.town,
-                              district:req.body.district ,
-
-                    
+                              town: req.body.town,
+                              district: req.body.district,
                     },
                     phone_number: req.body.phone_number,
                     business_type: req.body.business_type,
@@ -97,29 +103,28 @@ router.get("/list", (req, res) => {
 
 // Thống kê số lượng giấy chứng nhận cấp theo thời gian là loại hình cơ sở (sản xuất thực phẩm hay dịch vụ ăn uống).
 router.get("/listbusiness", (req, res) => {
-       fullname= req.body.fullname,
-    address = req.body.address,
-    
-    phone_number= req.body.phone_number,
-    business_type= req.body.business_type,
-    environment= req.body.environment,
-    appliances= req.body.appliances,
-    water_source= req.body.water_source,
-    ingredients= req.body.ingredients,
-    food_preservation= req.body.food_preservation,
-    waste_treatment= req.body.waste_treatment,
-    owners= req.body.owners,
-    processing= req.body.processing,
-    business_paper= req.body.business_paper,
-          FoodFacility.find(req.body)
-                    .populate("certification")
-                    .sort("MFG")
-                    .then((data) => {
-                              res.send(data);
-                    })
-                    .catch((err) => {
-                              res.send(err);
-                    });
+          (fullname = req.body.fullname),
+                    (address = req.body.address),
+                    (phone_number = req.body.phone_number),
+                    (business_type = req.body.business_type),
+                    (environment = req.body.environment),
+                    (appliances = req.body.appliances),
+                    (water_source = req.body.water_source),
+                    (ingredients = req.body.ingredients),
+                    (food_preservation = req.body.food_preservation),
+                    (waste_treatment = req.body.waste_treatment),
+                    (owners = req.body.owners),
+                    (processing = req.body.processing),
+                    (business_paper = req.body.business_paper),
+                    FoodFacility.find(req.body)
+                              .populate("certification")
+                              .sort("MFG")
+                              .then((data) => {
+                                        res.send(data);
+                              })
+                              .catch((err) => {
+                                        res.send(err);
+                              });
 
           //   FoodFacility.find({ business_type: { $in: "kinh doanh" } })
           //             .populate("certification").sort("MFG")
@@ -151,11 +156,95 @@ router.get("/listlimit", (req, res) => {
                                                   err
                               );
                     }
-          }).limit(5);
+          }).limit(10).skip(page_number*10);
 });
+
+// Lọc danh sách các cơ sở đủ điều kiện an toàn thực phẩm (có giấy chứng nhận đang còn hiệu lực.
+router.get("/listfoodcertification", (req, res) => {
+          var queryDate = Date.now();
+          //  var queryDate='21/05/2022';
+          //       var condition = {
+          //             'modelname': 'lumia',
+          //             'Status':'Active',
+          //             'Categories.mainmodels.fromdate': {$gte: queryDate },
+          //             'Categories.mainmodels.todate': {$lte: queryDate }
+          //      };
+
+          var condition = Certification.find({
+                    MFG: { $gte: queryDate },
+                    expiration_date: { $lte: queryDate },
+          });
+          console.log(queryDate);
+          FoodFacility.find(req.body)
+                    .populate({path:"certification",
+                    match: { condition}})
+                    
+                    .then((data) => {
+                              res.send(data);
+                    })
+                    .catch((err) => {
+                              res.send(err);
+                    });
+});
+// Lọc danh sách các cơ sở  không đủ điều kiện an toàn thực phẩm 
+router.get("/listfoodnotcertification", (req, res) => {
+    var queryDate = Date.now();
+    //  var queryDate='21/05/2022';
+    //       var condition = {
+    //             'modelname': 'lumia',
+    //             'Status':'Active',
+    //             'Categories.mainmodels.fromdate': {$gte: queryDate },
+    //             'Categories.mainmodels.todate': {$lte: queryDate }
+    //      };
+
+    var condition1 = Certification.find({
+           $or: [  {MFG: { $lte: queryDate } },
+              {expiration_date: { $gte: queryDate }}]});
+   
+    
+    //console.log(queryDate);
+    FoodFacility.find(req.body)
+              .populate({path:"certification",
+              match: { condition1}})
+             
+              .then((data) => {
+                        res.send(data);
+              })
+              .catch((err) => {
+                        res.send(err);
+              });
+});
+// lọc chi tiết hơn danh sách cơ sở chưa được cấp, đã hết hạn, bị thu hồi giấy chứng nhận.
+router.get("/listnotcertificationcheck", (req, res) => {
+   // var queryDate = Date.now();
+    //  var queryDate='21/05/2022';
+    //       var condition = {
+    //             'modelname': 'lumia',
+    //             'Status':'Active',
+    //             'Categories.mainmodels.fromdate': {$gte: queryDate },
+    //             'Categories.mainmodels.todate': {$lte: queryDate }
+    //      };
+    //var status=req.body.status;
+    var condition = Certification.find({status:req.body.status});
+    
+    
+    console.log(req.body.status);
+    FoodFacility.find(req.body)
+              .populate({path:"certification",
+              match: { status:req.body.status}})
+              .exec()
+              .then((data) => {
+                        res.send(data);
+              })
+              .catch((err) => {
+                        res.send(err);
+              });
+});
+
+
 function createMultipleFoodFacilityFromArray(foodFacilityList) {
           const forLoop = async () => {
-                    for (let food of foodfacilityList) {
+                    for (let food of foodFacilityList) {
                               var certi = new Certification({
                                         _id: new mongoose.Types.ObjectId(),
                                         certification_number:
@@ -180,14 +269,18 @@ function createMultipleFoodFacilityFromArray(foodFacilityList) {
                                         processing: food.processing,
                                         certification: certi._id,
                               });
+
                               foodfacility.save(foodfacility).catch((err) => {
-                                        return false;
+                                        res.status(500).send({
+                                                  message:
+                                                            err.message +
+                                                            ", Error when createfoodfacilityData.",
+                                        });
                               });
+                              //console.log(foodfacility);
                     }
           };
-          forLoop().catch((err) => {
-                    return false;
-          });
+          forLoop();
           return true;
 }
 ////
@@ -214,7 +307,8 @@ router.post("/insertmultiphe", (req, res) => {
                                         appliances: food.appliances,
                                         water_source: food.water_source,
                                         ingredients: food.ingredients,
-                                        food_preservation:food.food_preservation,
+                                        food_preservation:
+                                                  food.food_preservation,
                                         waste_treatment: food.waste_treatment,
                                         owners: food.owners,
                                         processing: food.processing,
@@ -239,7 +333,7 @@ router.post("/insertmultiphe", (req, res) => {
           });
 });
 //cap moi giay chung nhan cho co sow
-router.put("createnew/:id", (req, res) => {
+router.put("/createnew/:id", (req, res) => {
           //   FoodFacility.findById(req.params.id, (err, doc) => {
           //             if (!err) {
           //                       res.render("foodfacility/addOrEdit", {
@@ -249,28 +343,31 @@ router.put("createnew/:id", (req, res) => {
           //             }
           //   }).lean;
           // const studentID = req.params.studentID;
-          FoodFacility.findById(req.params.id)
-                    .then((data) => {
-                              if (!data)
-                                        res.status(404).send({
-                                                  message: "Not found foodfacility with id ",
-                                        });
-                              else {
-                                        var certi = new Certification({
-                                                  _id: new mongoose.Types.ObjectId(),
-                                                  certification_number:
-                                                            food.certification_number,
-                                        });
-                                        certi.save();
-                                        data.certification = certi._id;
-                                        res.status(200).send(data);
-                              }
-                    })
-                    .catch((err) => {
-                              res.status(500).send({
-                                        message: "Error retrieving student with id=",
-                              });
-                    });
+          var certi = new Certification({
+            _id: new mongoose.Types.ObjectId(),
+            certification_number:
+                     req.body.certification_number,
+            expiration_date:
+                      req.body
+                                .expiration_date,
+            status: "cap moi",
+         });
+         certi.save();
+           console.log(req.params.id)
+           const id = ObjectId(req.params.id); 
+          FoodFacility.findOneAndUpdate({_id:id}, {certification:certi._id
+           }).then((data) =>{
+            if (!data)
+            res.status(404).send({
+                      message:
+                                "Not found student with id " 
+                                
+            })
+            else{
+               res.status(200).send(data);
+            }
+           })
+
 });
 //gia han giay chung nhan
 router.put("/extenddate", (req, res) => {
@@ -284,8 +381,16 @@ router.put("/extenddate", (req, res) => {
           //   }).lean;
           // const studentID = req.params.studentID;
           const certificationID = req.body.certificationID;
+          var oneYearFromNow = new Date();
+          oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+         // req.body.status="gia han";
           // res.status(200).send(req.body);
-          Certification.findOne({ certification_number: certificationID })
+          Certification.findOneAndUpdate(
+                    { certification_number: certificationID },
+                  {$set:  {expiration_date:oneYearFromNow
+                   ,  status: "gia han"}}
+                    
+          )
                     .then((data) => {
                               if (!data)
                                         res.status(404).send({
@@ -294,12 +399,6 @@ router.put("/extenddate", (req, res) => {
                                                             certificationID,
                                         });
                               else {
-                                        var oneYearFromNow = new Date();
-                                        oneYearFromNow.setFullYear(
-                                                  oneYearFromNow.getFullYear() +
-                                                            1
-                                        );
-                                        data.expiration_date = oneYearFromNow;
                                         res.status(200).send(data);
                               }
                     })
@@ -315,10 +414,10 @@ router.put("/extenddate", (req, res) => {
 router.put("/recallcertification", (req, res) => {
           const certificationID = req.body.certificationID;
           //Certification.findByIdAndRemove(certificationID, (err, doc));
-          Certification.findOne({
-                    certification_number: certificationID,
-          }).remove();
-          res.status(200).send({ message: "done remove " + certificationID });
+          Certification.findOneAndUpdate({
+                    certification_number: certificationID},{ status: "thu hoi"
+          }).then((data) =>{res.status(200).send(data)})
+        //  res.status(200).send({ message: "done remove " + certificationID });
 });
 //Thống kê số lượng giấy chứng nhận cấp theo thời gian là loại hình cơ sở (sản xuất thực phẩm hay dịch vụ ăn uống).
 router.put("/recallcertification", (req, res) => {

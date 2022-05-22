@@ -29,16 +29,7 @@ var addressSchema = new mongoose.Schema({
                     maxlength: 30,
           },
 });
-var checkconditionSchema = new mongoose.Schema({
-          decision_date: Date,
-          conduct_date: Date,
-          end_date: Date,
-          announcement_date: Date,
-          foodfacility_number: {
-                    type: Schema.Types.ObjectId,
-                    ref: "FoodFacility",
-          },
-});
+
 var certificationSchema = new mongoose.Schema({
           _id: Schema.Types.ObjectId,
           certification_number: {
@@ -53,12 +44,13 @@ var certificationSchema = new mongoose.Schema({
           expiration_date: {
                     type: Date,
           },
-          withdrawal_date: {
-                    type: Date,
-          },
+          //   ,
+          //   withdrawal_date: {
+          //             type: Date,
+          //   }
           status: {
-            type: Date,
-  },
+                    type: String,
+          },
 });
 //fullname address phone_number business_type certification
 var foodfacilitySchema = new mongoose.Schema(
@@ -126,6 +118,81 @@ var foodfacilitySchema = new mongoose.Schema(
           },
           { timestamps: true }
 );
+var checkfacilitySchema = new mongoose.Schema({
+          decision_date: Date,
+          conduct_date: Date,
+          end_date: Date,
+          announcement_date: Date,
+          examined_foodsample: {
+                    type: String,
+                    lowercase: true,
+          },
+          handling_violations: [String],
+
+          foodfacility_number: [
+                    {
+                              type: Schema.Types.ObjectId,
+                              ref: "FoodFacility",
+                    },
+          ],
+});
+
+var foodsamplingSchema = new mongoose.Schema({
+          environment: {
+                    type: String,
+                    lowercase: true,
+          },
+          appliances: {
+                    type: String,
+                    lowercase: true,
+          },
+          water_source: {
+                    type: String,
+                    lowercase: true,
+          },
+          ingredients: {
+                    type: String,
+                    lowercase: true,
+          },
+          food_preservation: {
+                    type: String,
+                    lowercase: true,
+          },
+          waste_treatment: {
+                    type: String,
+                    lowercase: true,
+          },
+          owners: {
+                    type: String,
+                    lowercase: true,
+          },
+          processing: {
+                    type: String,
+                    lowercase: true,
+          },
+          business_paper: {
+                    type: String,
+                    lowercase: true,
+          },
+          status: {
+                    type: String,
+                    lowercase: true, //da gui giam dinh hay chua
+          },
+          result: {
+                    type: String,
+                    lowercase: true,
+          },
+          result_date: {
+                    type: Date,
+          },
+          foodfacility_number: {
+                    type: Schema.Types.ObjectId,
+                    ref: "FoodFacility",
+          },
+});
 //certification: mongoose.Schema.Types.ObjectID
+mongoose.model("CheckFacility", checkfacilitySchema);
+mongoose.model("FoodSampling", foodsamplingSchema);
+
 mongoose.model("FoodFacility", foodfacilitySchema);
 mongoose.model("Certification", certificationSchema);
