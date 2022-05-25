@@ -8,6 +8,8 @@ mongoose.connect('mongodb://localhost:27017/FoodFacilityDB',{ useNewUrlParser:tr
 });
 
 require('./foodfacility.model')
+require('./account.model')
+
 //require('./certification.model')
 //Sercure: chỉ dc cookie dc gửi khi dùng https .,
 //httponly : trinh duyet ko dc dug javascipt de dung .

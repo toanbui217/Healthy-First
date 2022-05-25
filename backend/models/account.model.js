@@ -1,3 +1,5 @@
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 //specialist //manager
 const authorityLevel = [
           "",
@@ -24,7 +26,7 @@ var accountSchema = mongoose.Schema(
                                         message: String,
                                         createdTime: String,
                               },
-                    ]
+                    ],
           },
           { timestamps: true }
 );

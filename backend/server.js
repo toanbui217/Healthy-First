@@ -1,10 +1,13 @@
+require("dotenv").config();
 require("./models/db");
+///const jwt = require("jsonwebtoken");
 const express = require("express");
 const path = require("path");
 //const exphbs=require('express-handlebars');
 const exphbs = require("express-handlebars");
 const bodyparser = require("body-parser");
 const foodfacilityController = require("./controller/foodfacilityController");
+const accountController = require("./controller/accountController");
 var app = express();
 //app.use(express.static('./filestatuc'))
 app.use(
@@ -27,6 +30,7 @@ app.listen(3000, () => {
           console.log("Express server started at port :3000");
 });
 app.use("/foodfacility", foodfacilityController);
+app.use("/account", accountController);
 
 
 app.all("*", (req, res) => {
