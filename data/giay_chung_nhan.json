@@ -1,181 +1,241 @@
 [{
     "certification_number": "189/2020/NNPTNT-HAN",
-    "MFG": "17/09/2020",
-    "expiration_date": "17/09/2023",
+    "MFG": "2020/09/17",
+    "expiration_date": "2023/09/17",
     "status": "cap moi"
 },
 {
     "certification_number": "193/2020/NNPTNT-HAN",
-    "MFG": "17/09/2020",
-    "expiration_date": "17/09/2023",
+    "MFG": "2020/09/17",
+    "expiration_date": "2023/09/17",
     "status": "Cap lai"
 },
 {
     "certification_number": "188/2020/NNPTNT-HAN",
-    "MFG": "15/09/2020",
-    "expiration_date": "15/09/2023",
+    "MFG": "2020/09/15",
+    "expiration_date": "2023/09/15",
     "status": "Cap moi"
 },
 {
     "certification_number": "192/2020/NNPTNT-HAN",
-    "MFG": "17/09/2020",
-    "expiration_date": "17/09/2023",
+    "MFG": "2020/09/17",
+    "expiration_date": "2023/09/17",
     "status": "Cap lai"
 },
 {
     "certification_number": "187/2020/NNPTNT-HAN",
-    "MFG": "10/09/2020",
-    "expiration_date": "10/09/2023",
+    "MFG": "2020/09/10",
+    "expiration_date": "2023/09/10",
     "status": "Cap moi"
 },
 {
     "certification_number": "190/2020/NNPTNT-HAN",
-    "MFG": "15/09/2020",
-    "expiration_date": "15/09/2023",
+    "MFG": "2020/09/15",
+    "expiration_date": "2023/09/15",
     "status": "Cap moi"
 },
 {
     "certification_number": "181/2020/NNPTNT-HAN",
-    "MFG": "07/09/2020",
-    "expiration_date": "07/09/2023",
+    "MFG": "2020/09/07",
+    "expiration_date": "2023/09/17",
     "status": "Cap lai"
 },
 {
     "certification_number": "183/2020/NNPTNT-HAN",
-    "MFG": "07/09/2020",
-    "expiration_date": "07/09/2023",
+    "MFG": "2020/09/07",
+    "expiration_date": "2023/09/17",
     "status": "Cap moi"
 },
 {
-    "certification_number": "",
-    "MFG": "",
-    "expiration_date": "",
+    "certification_number": "102/2020/NNPTNT-HAN",
+    "MFG": "2020/06/22",
+    "expiration_date": "2023/06/22",
     "status": "thu hoi"
 },
 {
-    "certification_number": "",
-    "MFG": "",
-    "expiration_date": "",
+    "certification_number": "108/2020/NNPTNT-HAN",
+    "MFG": "2020/06/16",
+    "expiration_date": "2023/06/16",
     "status": "thu hoi"
 },
 {
     "certification_number": "182/2020/NNPTNT-HAN",
-    "MFG": "07/09/2020",
-    "expiration_date": "07/09/2023",
+    "MFG": "2020/09/07",
+    "expiration_date": "2023/09/07",
     "status": "cap lai"
 },
 {
-    "certification_number": "180/2020/NNPTNT-HAN",
-    "MFG": "07/09/2020",
-    "expiration_date": "07/09/2023",
+    "certification_number": "177/2020/NNPTNT-HAN",
+    "MFG": "2020/09/07",
+    "expiration_date": "2023/09/07",
     "status": "cap lai"
 },
 {
     "certification_number": "171/2019/NNPTNT-HAN",
-    "MFG": "26/08/2020",
-    "expiration_date": "26/08/2023",
+    "MFG": "2020/08/26",
+    "expiration_date": "2023/08/26",
     "status": "cap lai"
 },
 {
     "certification_number": "170/2019/NNPTNT-HAN",
-    "MFG": "25/08/2020",
-    "expiration_date": "25/08/2023",
+    "MFG": "2020/08/23",
+    "expiration_date": "2023/08/23",
     "status": "cap lai"
 },
 {
     "certification_number": "169/2019/NNPTNT-HAN",
-    "MFG": "25/08/2020",
-    "expiration_date": "25/08/2023",
+    "MFG": "2020/08/25",
+    "expiration_date": "2023/08/25",
     "status": "cap lai"
 },
 {
     "certification_number": "166/2020/NNPTNT-HAN",
-    "MFG": "18/08/2020",
-    "expiration_date": "18/08/2023",
+    "MFG": "2020/08/18",
+    "expiration_date": "2023/08/18",
     "status": "cap lai"
 },
 {
     "certification_number": "160/2020/NNPTNT-HAN",
-    "MFG": "06/08/2020",
-    "expiration_date": "06/08/2023",
+    "MFG": "2020/08/06",
+    "expiration_date": "2023/08/06",
     "status": "cap moi"
 },
 {
     "certification_number": "161/2019/NNPTNT-HAN",
-    "MFG": "11/07/2019",
-    "expiration_date": "11/07/2022",
+    "MFG": "2019/07/11",
+    "expiration_date": "2022/07/11",
     "status": "cap lai"
 },
 {
     "certification_number": "162/2019/NNPTNT-HAN",
-    "MFG": "19/11/2019",
-    "expiration_date": "19/11/2022",
+    "MFG": "2019/11/19",
+    "expiration_date": "2022/11/19",
     "status": "cap lai"
 },
 {
     "certification_number": "159/2020/NNPTNT-HAN",
-    "MFG": "04/08/2020",
-    "expiration_date": "04/08/2023",
+    "MFG": "2020/08/04",
+    "expiration_date": "2023/08/04",
     "status": "cap moi"
 },
 {
     "certification_number": "158/2020/NNPTNT-HAN",
-    "MFG": "03/08/2020",
-    "expiration_date": "03/08/2023",
+    "MFG": "2020/08/03",
+    "expiration_date": "2023/08/03",
     "status": "cap moi"
 },
 {
     "certification_number": "156/2020/NNPTNT-HAN",
-    "MFG": "27/07/2020",
-    "expiration_date": "27/07/2023",
+    "MFG": "2020/07/27",
+    "expiration_date": "2023/07/27",
     "status": "cap moi"
 },
 {
     "certification_number": "145/2019/NNPTNT-HAN",
-    "MFG": "23/07/2019",
-    "expiration_date": "23/07/2022",
+    "MFG": "2019/07/22",
+    "expiration_date": "2022/07/22",
     "status": "cap moi"
 },
 {
     "certification_number": "138/2020/NNPTNT-HAN",
-    "MFG": "09/07/2020",
-    "expiration_date": "09/07/2023",
+    "MFG": "2020/07/09",
+    "expiration_date": "2023/07/09",
     "status": "cap moi"
 },
 {
     "certification_number": "131/2020/NNPTNT-HAN",
-    "MFG": "05/07/2020",
-    "expiration_date": "05/07/2023",
+    "MFG": "2020/07/05",
+    "expiration_date": "2023/07/05",
     "status": "cap moi"
 },
 {
     "certification_number": "68/2020/NNPTNT-HAN",
-    "MFG": "19/05/2020",
-    "expiration_date": "19/05/2023",
+    "MFG": "2020/05/19",
+    "expiration_date": "2023/05/19",
     "status": "cap lai"
 },
 {
     "certification_number": "85/2020/NNPTNT-HAN",
-    "MFG": "04/06/2020",
-    "expiration_date": "04/06/2023",
+    "MFG": "2020/06/04",
+    "expiration_date": "2023/06/04",
     "status": "cap lai"
 },
 {
     "certification_number": "58/2020/NNPTNT-HAN",
-    "MFG": "11/05/2020",
-    "expiration_date": "11/05/2023",
+    "MFG": "2020/05/11",
+    "expiration_date": "2023/05/11",
     "status": "cap lai"
 },
 {
     "certification_number": "47/2020/NNPTNT-HAN",
-    "MFG": "06/05/2020",
-    "expiration_date": "06/05/2023",
+    "MFG": "2020/05/06",
+    "expiration_date": "2023/05/06",
     "status": "cap lai"
 },
 {
     "certification_number": "21/2019/NNPTNT-HAN",
-    "MFG": "15/01/2019",
-    "expiration_date": "15/01/2022",
+    "MFG": "2019/01/15",
+    "expiration_date": "2022/01/15",
     "status": "het han"
+},
+{
+    "certification_number": "136/2020/NNPTNT-HAN",
+    "MFG": "2020/07/20",
+    "expiration_date": "2023/07/20",
+    "status": "cap moi"
+},
+{
+    "certification_number": "36/2020/NNPTNT-HAN",
+    "MFG": "2020/03/24",
+    "expiration_date": "2023/03/24",
+    "status": "cap moi"
+},
+{
+    "certification_number": "34/2020/NNPTNT-HAN",
+    "MFG": "2020/03/18",
+    "expiration_date": "2023/03/18",
+    "status": "cap moi"
+},
+{
+    "certification_number": "25/2020/NNPTNT-HAN",
+    "MFG": "2020/03/10",
+    "expiration_date": "2023/03/10",
+    "status": "cap lai"
+},
+{
+    "certification_number": "15/2020/NNPTNT-HAN",
+    "MFG": "2020/01/16",
+    "expiration_date": "2023/01/16",
+    "status": "cap moi"
+},
+{
+    "certification_number": "08/2020/NNPTNT-HAN",
+    "MFG": "2020/01/13",
+    "expiration_date": "2023/01/13",
+    "status": "cap lai"
+},
+{
+    "certification_number": "370/2019/NNPTNT-HAN",
+    "MFG": "2019/12/25",
+    "expiration_date": "2022/12/25",
+    "status": "cap lai"
+},
+{
+    "certification_number": "360/2019/NNPTNT-HAN",
+    "MFG": "2019/11/16",
+    "expiration_date": "2022/11/16",
+    "status": "cap lai"
+},
+{
+    "certification_number": "208/2019/NNPTNT-HAN",
+    "MFG": "2019/08/15",
+    "expiration_date": "2022/08/15",
+    "status": "cap lai"
+},
+{
+    "certification_number": "186/2019/NNPTNT-HAN",
+    "MFG": "2019/07/30",
+    "expiration_date": "2022/07/30",
+    "status": "cap lai"
 }
 ]
