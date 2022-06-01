@@ -113,7 +113,7 @@ router.post("/login", (req, res) => {
           // res.json({ accessToken: accessToken });
           //console.log(req.body);
           //   const username = req.body.username;
-          //   const user = { name: username };
+             const user = { name: username };
           //   const accessToken = generateAccessToken(user);
           //https://viblo.asia/p/refresh-token-la-gi-cach-hoat-dong-co-khac-gi-so-voi-token-khong-E375zQB2lGW
           const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET,{ expiresIn: "900h" });

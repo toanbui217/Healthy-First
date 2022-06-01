@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 //specialist //manager
 const authorityLevel = [
-          "",
+          "",//chuyen vien
           "SPECIALIST", //chuyenvien
-          "MANAGER", //Quan ly
-          "ADMIN",
-]; // Admin]
+          "MANAGER" //Quan ly
+          
+]; 
 
 var accountSchema = mongoose.Schema(
           {
