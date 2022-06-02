@@ -38,8 +38,8 @@ var certificationSchema = new mongoose.Schema({
           MFG: {
                     // ngay co chung chi khong the thay doi va co hieu luc luc no duoc tao ra
                     type: Date,
-                    default: () => Date.now(),
-                    immutable: true,
+                    //default: () => Date.now(),
+                    //immutable: true,
           },
           expiration_date: {
                     type: Date,
@@ -110,6 +110,10 @@ var foodfacilitySchema = new mongoose.Schema(
                     business_paper: {
                               type: String,
                               lowercase: true,
+                    },
+                    certification_number: {
+                              type: String,
+                              luppercase: true,
                     },
                     certification: {
                               type: Schema.Types.ObjectId,
