@@ -5,6 +5,11 @@ const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const Account = mongoose.model("Account");
 var bcrypt = require("bcryptjs");
+const auth = require("../middleware/auth");
+const { authRole } = require("../middleware/basicAuth");
+const { canViewFoodFacility } = require("../middleware/foodfacility");
+const FoodFacility = mongoose.model("FoodFacility");
+const { ROLE } = require("../models/account.model");
 
 //const FoodFacility = mongoose.model("FoodFacility");
 //const Certification = mongoose.model("Certification");
@@ -60,7 +65,7 @@ function sortDate(noti1, noti2) {
 
           return bDateTime - aDateTime;
 }
-router.get("/posts", authenticateToken, (req, res) => {
+router.post("/posts", auth.auth, (req, res) => {
           try {
                     res.status(200).send({ message: "Success author" });
           } catch (error) {
@@ -79,11 +84,11 @@ router.post("/token", (req, res) => {
           console.log(refreshToken);
           if (refreshToken == null) return res.sendStatus(401);
           if (!refreshTokens.includes(refreshToken)) return res.sendStatus(403);
-        //   const token = jwt.sign(
-        //             { username: data.username },
-        //             process.env.REFRESH_TOKEN_SECRET,
-        //             { expiresIn: "900h" }
-        //   );
+          //   const token = jwt.sign(
+          //             { username: data.username },
+          //             process.env.REFRESH_TOKEN_SECRET,
+          //             { expiresIn: "900h" }
+          //   );
           jwt.verify(
                     refreshToken,
                     process.env.REFRESH_TOKEN_SECRET,
@@ -106,65 +111,7 @@ router.post("/token", (req, res) => {
                     }
           );
 });
-router.post("/login", (req, res) => {
-          // const username = req.body.username;
-          // const user = { name: username };
-          // const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
-          // res.json({ accessToken: accessToken });
-          //console.log(req.body);
-          //   const username = req.body.username;
-             const user = { name: username };
-          //   const accessToken = generateAccessToken(user);
-          //https://viblo.asia/p/refresh-token-la-gi-cach-hoat-dong-co-khac-gi-so-voi-token-khong-E375zQB2lGW
-          const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET,{ expiresIn: "900h" });
-          refreshTokens.push(refreshToken);
-          //   console.log(refreshTokens);
 
-          //   res.json({ accessToken: accessToken, refreshToken: refreshToken });
-          const { username, password } = req.body;
-          Account.findOne({ username }).then(async (data) => {
-                    console.log(data);
-          });
-          Account.findOne({ username })
-                    .then(async (data) => {
-                              if (!data) {
-                                        return res.status(401).send({
-                                                  message: "User doesn't exist",
-                                        });
-                              }
-
-                              const isPasswordCorrect = await bcrypt.compare(
-                                        password,
-                                        data.password
-                              );
-
-                              if (!isPasswordCorrect) {
-                                        return res.status(401).send({
-                                                  message: "Invalid username or password!",
-                                        });
-                              }
-
-                              const token = jwt.sign(
-                                        { username: data.username },
-                                        process.env.ACCESS_TOKEN_SECRET,
-                                        { expiresIn: "15s" }
-                              );
-
-                              res.status(200).send({
-                                        username: username,
-                                        id: data._id,
-                                        authorityLevel: data.authorityLevel,
-                                        token: token,
-                              });
-                    })
-                    .catch((err) => {
-                              res.status(500).send({
-                                        message:
-                                                  "Something went wrong when login" +
-                                                  err,
-                              });
-                    });
-});
 // Tạo 1 tài khoản mới
 //router.post("/login", (req, res) =>
 router.post("/create/", (req, res) => {
@@ -173,7 +120,9 @@ router.post("/create/", (req, res) => {
                     !req.body.password ||
                     !req.body.firstName ||
                     !req.body.surName ||
-                    !req.body.email
+                    !req.body.email ||
+                    !req.body.role ||
+                    !req.body.district
           ) {
                     res.status(400).send({
                               message: "Necessary information can not be empty",
@@ -199,6 +148,8 @@ router.post("/create/", (req, res) => {
                                                             ),
                                                             firstName: req.body
                                                                       .firstName,
+                                                            district: req.body
+                                                                      .district,
                                                             surName: req.body
                                                                       .surName,
                                                             email: req.body
@@ -227,13 +178,13 @@ router.post("/create/", (req, res) => {
                                                                                             .body
                                                                                             .notification
                                                                                 : [],
-                                                            authorityLevel:
+                                                            role:
                                                                       req.body
-                                                                                .authorityLevel !=
+                                                                                .role !=
                                                                       null
                                                                                 ? req
                                                                                             .body
-                                                                                            .authorityLevel
+                                                                                            .role
                                                                                 : "",
                                                   });
 
@@ -376,7 +327,7 @@ function createAccountFromStudent(student) {
                                                   messageOn: true,
                                                   avatarColor: randomAvatarColor(),
                                                   notification: [],
-                                                  authorityLevel: "",
+                                                  role: "",
                                         });
 
                                         account.save(account)
@@ -524,7 +475,7 @@ router.delete("/delete/", (req, res) => {
 
 // Xóa tât cả các tài khoản.
 router.delete("/deleteStudent/", (req, res) => {
-          Account.deleteMany({ authorityLevel: ["", "NONE"] })
+          Account.deleteMany({ role: ["", "SPECIALIST"] })
                     .then((data) => {
                               res.send({
                                         message: `${data.deletedCount} All student account info were deleted successfully!`,
@@ -586,5 +537,21 @@ function generateAccessToken(user) {
                     expiresIn: "3000000s",
           });
 }
-
+//router.use(setAccount);
+router.get("/", (req, res) => {
+          res.send("Home Page");
+});
+router.get("/admin", authRole(ROLE.ADMIN), (req, res) => {
+          res.send("Admin Page");
+});
+router.get("/dashboard", (req, res) => {
+          res.send("Dashboard Page");
+});
+function authGetProject(req, res, next) {
+          if (!canViewProject(req.user, req.project)) {
+                    res.status(401);
+                    return res.send("Not Allowed");
+          }
+          next();
+}
 module.exports = router;
