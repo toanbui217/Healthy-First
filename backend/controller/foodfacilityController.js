@@ -5,6 +5,14 @@ const FoodFacility = mongoose.model("FoodFacility");
 const Certification = mongoose.model("Certification");
 const excelToJson = require("convert-excel-to-json");
 const ObjectId = require("mongodb").ObjectId;
+const auth = require("../middleware/auth");
+router.get("/one/", auth.auth, (req, res) => {
+          try {
+                    res.status(200).send({ message: "Success author" });
+          } catch (error) {
+                    res.status(401).send({ error: error });
+          }
+});
 //them 1 co so
 router.post("/", (req, res) => {
           //fullname address phone_number business_type certification
@@ -210,21 +218,21 @@ router.get("/listfoodnotcertification", (req, res) => {
           //             'Categories.mainmodels.todate': {$lte: queryDate }
           //      };
 
-        //   var condition1 = Certification.find({
-        //             $or: [
-        //                       { MFG: { $gte: queryDate } },
-        //                      // { expiration_date: { $lte: queryDate } },
-        //                     //  { status: { $eq: "thu hoi" } },
-        //             ],
-        //   });
+          //   var condition1 = Certification.find({
+          //             $or: [
+          //                       { MFG: { $gte: queryDate } },
+          //                      // { expiration_date: { $lte: queryDate } },
+          //                     //  { status: { $eq: "thu hoi" } },
+          //             ],
+          //   });
 
           //console.log(queryDate);
-        // vả  conditon
+          // vả  conditon
           FoodFacility.find()
                     .populate({
                               path: "certification",
                               match: {
-                                      $or: [
+                                        $or: [
                                                   { MFG: { $gte: queryDate } },
                                                   {
                                                             expiration_date: {
@@ -236,17 +244,17 @@ router.get("/listfoodnotcertification", (req, res) => {
                                                                       $eq: "thu hoi",
                                                             },
                                                   },
-                                       ],
+                                        ],
                               },
                     })
 
                     .then((data) => {
-                        // for (let food of data.body) {
-                        //         if(food.certification=="null"){
-                        //                 console.log(food);
-                        //         }
-                        // }
-                        // console.log(data.body[1]);
+                              // for (let food of data.body) {
+                              //         if(food.certification=="null"){
+                              //                 console.log(food);
+                              //         }
+                              // }
+                              // console.log(data.body[1]);
                               res.send(data);
                     })
                     .catch((err) => {
@@ -343,7 +351,7 @@ router.post("/insertmultiple", (req, res) => {
                                         address: {
                                                   street: food.street,
                                                   town: food.town,
-                                                  distric: food.district,
+                                                  district: food.district,
                                                   city: food.city,
                                         },
                                         phone_number: food.phone_number,
@@ -818,5 +826,17 @@ router.post("/insertall", (req, res) => {
                     res.status(500).send({ message: error });
           }
 });
+function setFoodFacility(req, res, next) {
+          const foodfacilitytLocation = req.params.foodfacilityLocation;
+          req.foodfacility = FoodFacility.find(
+                    (foodfacility) =>
+                              foodfacility.location === foodfacilityLocation
+          );
 
+          if (req.foodfacility == null) {
+                    res.status(404);
+                    return res.send("Project not found");
+          }
+          next();
+}
 module.exports = router;

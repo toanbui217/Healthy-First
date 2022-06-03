@@ -1,13 +1,11 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 //specialist //manager
-const authorityLevel = [
-          "",//chuyen vien
-          "SPECIALIST", //chuyenvien
-          "MANAGER" //Quan ly
-          
-]; 
+const ROLE = {
+    ADMIN: 'MANAGER',
+    BASIC: 'SPECIALIST'
 
+  }
 var accountSchema = mongoose.Schema(
           {
                     username: String,
@@ -15,10 +13,15 @@ var accountSchema = mongoose.Schema(
                     firstName: String,
                     surName: String,
                     email: String,
-                    published: Boolean,
-                    messageOn: Boolean,
                     avatarColor: String,
-                    authorityLevel: String,
+                    role: {
+                              type: String,
+                              uppercase: true,
+                    },
+                    district: {
+                              type: String,
+                              lowercase: true,
+                    },
                     notification: [
                               {
                                         read: Boolean,
@@ -31,3 +34,6 @@ var accountSchema = mongoose.Schema(
           { timestamps: true }
 );
 mongoose.model("Account", accountSchema);
+module.exports = {
+          ROLE: ROLE,
+};
