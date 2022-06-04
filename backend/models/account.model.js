@@ -2,10 +2,10 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 //specialist //manager
 const ROLE = {
-    ADMIN: 'MANAGER',
-    BASIC: 'SPECIALIST'
-
-  }
+          ROOT: "BOSS",
+          ADMIN: "MANAGER",
+          BASIC: "SPECIALIST",
+};
 var accountSchema = mongoose.Schema(
           {
                     username: String,

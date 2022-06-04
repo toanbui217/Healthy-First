@@ -7,7 +7,10 @@ const Account = mongoose.model("Account");
 var bcrypt = require("bcryptjs");
 const auth = require("../middleware/auth");
 const { authRole } = require("../middleware/basicAuth");
-const { canViewFoodFacility } = require("../middleware/foodfacility");
+// const {
+//           canViewFoodFacility,
+//           canDeleteFoodFacility,
+// } = require("../middleware/foodfacility");
 const FoodFacility = mongoose.model("FoodFacility");
 const { ROLE } = require("../models/account.model");
 
@@ -17,16 +20,6 @@ const excelToJson = require("convert-excel-to-json");
 const ObjectId = require("mongodb").ObjectId;
 let refreshTokens = [];
 const saltRound = 10;
-// const posts = [
-//           {
-//                     username: "Kyle",
-//                     title: "Post 1",
-//           },
-//           {
-//                     username: "Jim",
-//                     title: "Post 2",
-//           },
-// ];
 function dateToPassword(date) {
           date = date.split("-");
           date = date.join("");
@@ -65,13 +58,7 @@ function sortDate(noti1, noti2) {
 
           return bDateTime - aDateTime;
 }
-router.post("/posts", auth.auth, (req, res) => {
-          try {
-                    res.status(200).send({ message: "Success author" });
-          } catch (error) {
-                    res.status(401).send({ error: error });
-          }
-});
+
 router.delete("/logout", (req, res) => {
           refreshTokens = refreshTokens.filter(
                     (token) => token !== req.body.token
@@ -114,7 +101,7 @@ router.post("/token", (req, res) => {
 
 // Tạo 1 tài khoản mới
 //router.post("/login", (req, res) =>
-router.post("/create/", (req, res) => {
+router.post("/create/", authRole(ROLE.ROOT), (req, res) => {
           if (
                     !req.body.username ||
                     !req.body.password ||
@@ -220,7 +207,7 @@ router.post("/create/", (req, res) => {
 });
 
 // Xóa 1 tài khoản
-router.delete("/delete/:id", (req, res) => {
+router.delete("/delete/:id", authRole(ROLE.ROOT), (req, res) => {
           const id = req.params.id;
 
           Account.findByIdAndRemove(id, { useFindAndModify: false })
@@ -245,7 +232,7 @@ router.delete("/delete/:id", (req, res) => {
 });
 
 // Đổi mật khẩu hoặc cập nhật thông tin tùy request
-router.post("/update/:id", (req, res) => {
+router.post("/update/:id", authRole(ROLE.ADMIN), (req, res) => {
           if (
                     req.body.constructor === Object &&
                     Object.keys(req.body).length === 0
@@ -353,7 +340,7 @@ function createAccountFromStudent(student) {
 }
 
 // Tạo thông báo cho 1 tài khoản.=
-router.post("/createNotification/:id", (req, res) => {
+router.post("/createNotification/:id", authRole(ROLE.ADMIN), (req, res) => {
           if (
                     !req.body.title ||
                     !req.body.message ||
@@ -391,7 +378,7 @@ router.post("/createNotification/:id", (req, res) => {
 });
 
 // Xóa 1 thông báo của 1 tài khoản.
-router.delete("/deleteNotification/", (req, res) => {
+router.delete("/deleteNotification/", authRole(ROLE.ADMIN), (req, res) => {
           const accountId = req.body.accountId;
           const notificationId = req.body.notificationId;
 
@@ -413,7 +400,7 @@ router.delete("/deleteNotification/", (req, res) => {
 });
 
 // Lấy danh sách tất cả các object model tài khoản.
-router.get("/getAll/", (req, res) => {
+router.get("/getAll/", authRole(ROLE.ADMIN), (req, res) => {
           Account.find()
                     .then((data) => {
                               if (!data) {
@@ -456,8 +443,8 @@ router.get("/getByUsername/:username", (req, res) => {
                               });
                     });
 });
-// Xóa tât cả các tài khoản.
-router.delete("/delete/", (req, res) => {
+// Xóa tât cả các tài khoản .
+router.delete("/delete/", authRole(ROLE.ROOT), (req, res) => {
           Account.deleteMany({})
                     .then((data) => {
                               res.send({
@@ -473,8 +460,8 @@ router.delete("/delete/", (req, res) => {
                     });
 });
 
-// Xóa tât cả các tài khoản.
-router.delete("/deleteStudent/", (req, res) => {
+// Xóa tât cả các tài khoản trừ mamnager va root.
+router.delete("/deleteStudent/", authRole(ROLE.ROOT), (req, res) => {
           Account.deleteMany({ role: ["", "SPECIALIST"] })
                     .then((data) => {
                               res.send({
@@ -491,7 +478,7 @@ router.delete("/deleteStudent/", (req, res) => {
 });
 
 // lấy thông báo của 1 tài khoản từ id.
-router.get("/getNotification/:id", (req, res) => {
+router.get("/getNotification/:id", authRole(ROLE.ADMIN),(req, res) => {
           if (!req.params.id) {
                     return res
                               .status(400)
@@ -520,38 +507,10 @@ router.get("/getNotification/:id", (req, res) => {
                     });
 });
 
-function authenticateToken(req, res, next) {
-          const authHeader = req.headers["authorization"];
-          const token = authHeader && authHeader.split(" ")[1];
-          if (token == null) return res.sendStatus(401);
-
-          jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-                    console.log(err);
-                    if (err) return res.sendStatus(403);
-                    req.user = user;
-                    next();
-          });
-}
 function generateAccessToken(user) {
           return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
                     expiresIn: "3000000s",
           });
 }
-//router.use(setAccount);
-router.get("/", (req, res) => {
-          res.send("Home Page");
-});
-router.get("/admin", authRole(ROLE.ADMIN), (req, res) => {
-          res.send("Admin Page");
-});
-router.get("/dashboard", (req, res) => {
-          res.send("Dashboard Page");
-});
-function authGetProject(req, res, next) {
-          if (!canViewProject(req.user, req.project)) {
-                    res.status(401);
-                    return res.send("Not Allowed");
-          }
-          next();
-}
+
 module.exports = router;

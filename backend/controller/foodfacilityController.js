@@ -6,6 +6,16 @@ const Certification = mongoose.model("Certification");
 const excelToJson = require("convert-excel-to-json");
 const ObjectId = require("mongodb").ObjectId;
 const auth = require("../middleware/auth");
+const { authRole } = require("../middleware/basicAuth");
+const {
+          canViewFoodFacility,
+          scopedFoodFacilitys,
+          canDeleteFoodFacility,
+} = require("../middleware/foodfacility");
+
+const { ROLE } = require("../models/account.model");
+const { Admin } = require("mongodb");
+
 router.get("/one/", auth.auth, (req, res) => {
           try {
                     res.status(200).send({ message: "Success author" });
@@ -15,16 +25,19 @@ router.get("/one/", auth.auth, (req, res) => {
 });
 //them 1 co so
 router.post("/", (req, res) => {
-          //fullname address phone_number business_type certification
-          //return res.status(400).send(req.body);
+          //403 là máy chủ hiểu nhưng không trả về gì
+          if (req.role === ROLE.BASIC && req.district != req.body.district) {
+                    // console.log("lol");
+                    return res.status(403).send("Not allowed");
+          }
           var oneYearFromNow = new Date();
           oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
           if (
                     !req.body.fullname ||
-                    !req.body.address ||
+                    !req.body.district ||
                     !req.body.phone_number ||
                     !req.body.business_type ||
-                    !req.body.certification_number
+                    !req.body.certification
           ) {
                     res.status(400).send({
                               message: "Some basic info is empty",
@@ -80,8 +93,8 @@ router.post("/", (req, res) => {
                     });
 });
 // lay danh sach co so
-router.get("/list", (req, res) => {
-          FoodFacility.find((err, docs) => {
+router.get("/list", authRole(ROLE.ADMIN), (req, res) => {
+          FoodFacility.find({}, (err, docs) => {
                     if (!err) {
                               //       res.render("foodfacility/list", {
 
@@ -116,26 +129,35 @@ router.get("/list", (req, res) => {
 //629594da827fed9e0b8f2cd1  629594da827fed9e0b8f2cd1
 // Thống kê số lượng giấy chứng nhận cấp theo thời gian là loại hình cơ sở (sản xuất thực phẩm hay dịch vụ ăn uống).
 router.get("/listbusiness", (req, res) => {
-          //   FoodFacility.findOne({})
-          //             .populate("certification")
-          //             .exec(function (err, story) {
-          //                       if (err) return handleError(err);
-          //                       console.log(story);
-          //             });
-          //neu muon
-          FoodFacility.find()
+          let query = null;
+          if (req.role == ROLE.BASIC) {
+                    query = { "address.district": req.district };
+          }
+
+          FoodFacility.find(query)
                     .populate("certification", "MFG")
                     .sort("MFG")
-                    // .exec(function (err, story) {
-                    //           if (err) return handleError(err);
-                    //           console.log(story);
-                    // });
                     .then((data) => {
                               res.send(data);
                     })
                     .catch((err) => {
                               res.send(err);
                     });
+          //   } else {
+          //             FoodFacility.find()
+          //                       .populate("certification", "MFG")
+          //                       .sort("MFG")
+          //                       // .exec(function (err, story) {
+          //                       //           if (err) return handleError(err);
+          //                       //           console.log(story);
+          //                       // });
+          //                       .then((data) => {
+          //                                 res.send(data);
+          //                       })
+          //                       .catch((err) => {
+          //                                 res.send(err);
+          //                       });
+          //   }
           //neu muon theo san xuat hay dich vu thi them find nay
           //   FoodFacility.find({ business_type: { $in: "kinh doanh" } })
           //             .populate("certification").sort("MFG")
@@ -146,10 +168,15 @@ router.get("/listbusiness", (req, res) => {
           //                       res.send(err);
           //             });
 });
+
 // lay n ban ghi bat dau tu trang
 router.get("/listlimit", (req, res) => {
           var page_number = req.body.page_number;
-          FoodFacility.find((err, docs) => {
+          let query = null;
+          if (req.role == ROLE.BASIC) {
+                    query = { "address.district": req.district };
+          }
+          FoodFacility.find(query, (err, docs) => {
                     if (!err) {
                               //       res.render("foodfacility/list", {
 
@@ -188,7 +215,11 @@ router.get("/listfoodcertification", (req, res) => {
           //             expiration_date: { $lte: queryDate },status:'thu hoi'
           //   });
           console.log(queryDate);
-          FoodFacility.find({})
+          let query = null;
+          if (req.role == ROLE.BASIC) {
+                    query = { "address.district": req.district };
+          }
+          FoodFacility.find(query)
                     .populate({
                               path: "certification",
                               match: {
@@ -228,7 +259,11 @@ router.get("/listfoodnotcertification", (req, res) => {
 
           //console.log(queryDate);
           // vả  conditon
-          FoodFacility.find()
+          let query = null;
+          if (req.role == ROLE.BASIC) {
+                    query = { "address.district": req.district };
+          }
+          FoodFacility.find(query)
                     .populate({
                               path: "certification",
                               match: {
@@ -272,10 +307,14 @@ router.post("/listnotcertificationcheck", (req, res) => {
           //             'Categories.mainmodels.todate': {$lte: queryDate }
           //      };
           //var status=req.body.status;
-          var condition = Certification.find({ status: req.body.status });
+
+          let query = null;
+          if (req.role == ROLE.BASIC) {
+                    query = { "address.district": req.district };
+          }
 
           console.log(req.body.status);
-          FoodFacility.find(req.body)
+          FoodFacility.find(query, req.body)
                     .populate({
                               path: "certification",
                               match: { status: req.body.status },
@@ -338,6 +377,12 @@ router.post("/insertmultiple", (req, res) => {
           // for (var index = 0; index < studentList.length; index++) {
           //    var food = foodfacilityList[index];
           for (let food of foodfacilityList) {
+                    if (
+                              food.district != req.district &&
+                              req.role == "SPECIALIST"
+                    ) {
+                              return res.status(403).send("not allowed");
+                    }
                     const certi = new Certification({
                               _id: new mongoose.Types.ObjectId(),
                               certification_number: food.certification,
@@ -392,7 +437,7 @@ router.post("/insertmultiple", (req, res) => {
 });
 //tao moi n giay phep
 ////update n co so
-router.post("/insertmultiplecer", (req, res) => {
+router.post("/insertmultiplecer",authRole(ROLE.ADMIN), (req, res) => {
           var certificationList = req.body;
 
           // for (var index = 0; index < studentList.length; index++) {
@@ -456,7 +501,7 @@ router.post("/insertmultiplecer", (req, res) => {
 });
 // cap moi , thu hoi , ra han
 //cap moi giay chung nhan cho co sow //dung req.body hoawc req.params
-router.put("/createnew/:id", (req, res) => {
+router.put("/createnew/:id", authRole(ROLE.ADMIN),(req, res) => {
           //   FoodFacility.findById(req.params.id, (err, doc) => {
           //             if (!err) {
           //                       res.render("foodfacility/addOrEdit", {
@@ -494,7 +539,7 @@ router.put("/createnew/:id", (req, res) => {
           );
 });
 //gia han giay chung nhan
-router.put("/extenddate/:id", (req, res) => {
+router.put("/extenddate/:id",authRole(ROLE.ADMIN), (req, res) => {
           //   FoodFacility.findById(req.params.id, (err, doc) => {
           //             if (!err) {
           //                       res.render("foodfacility/addOrEdit", {
@@ -538,7 +583,7 @@ router.put("/extenddate/:id", (req, res) => {
                     });
 });
 //thu hoi giay chugn nhan
-router.put("/recallcertification/:id", (req, res) => {
+router.put("/recallcertification/:id",authRole(ROLE.ADMIN), (req, res) => {
           const certificationID = req.body.certificationID;
           //Certification.findByIdAndRemove(certificationID, (err, doc));
           Certification.findOneAndUpdate(
@@ -743,7 +788,7 @@ router.delete("/delete/:id", (req, res) => {
                     });
 });
 //xoa tat ca ban ghi co so
-router.delete("/deleteall", (req, res) => {
+router.delete("/deleteall",authRole(ROLE.ADMIN), (req, res) => {
           // FoodFacility.deleteMany();
           FoodFacility.deleteMany({})
                     .then((data) => {
@@ -760,7 +805,7 @@ router.delete("/deleteall", (req, res) => {
                     });
 });
 //xoa tat ca ban ghi giay phep
-router.delete("/deleteallcer", (req, res) => {
+router.delete("/deleteallcer",authRole(ROLE.ADMIN), (req, res) => {
           Certification.deleteMany({})
                     .then((data) => {
                               res.send({
@@ -839,4 +884,82 @@ function setFoodFacility(req, res, next) {
           }
           next();
 }
+//router.use(setAccount);
+// router.get("/", (req, res) => {
+//           res.send("Home Page");
+// });
+// router.get("/admin", authRole(ROLE.ADMIN), (req, res) => {
+//           res.send("Admin Page");
+// });
+// router.get("/dashboard", authRole(ROLE.BASIC), (req, res) => {
+//           res.send("Dashboard Page");
+// });
+// router.get("/check", authRole(ROLE.BASIC), (req, res) => {
+//           res.json(scopedFoodFacilitys(req, req.foodfacility));
+// });
+// lay danh sach co so
+router.get(
+          "/list/:district",
+          setFoodFacility,
+          authGetFoodFacility,
+          (req, res) => {
+                    console.log(req.foodfacility);
+                    res.send(req.foodfacility);
+          }
+);
+
+router.delete(
+          "/:district",
+          setFoodFacility,
+          authGetFoodFacility,
+          (req, res) => {
+                    //console.log(req.foodfacility);
+                    //  res.send(req.foodfacility);
+          }
+);
+function setFoodFacility(req, res, next) {
+          const district = req.params.district;
+          //console.log(district);
+          FoodFacility.find({ "address.district": district })
+                    .then((data) => {
+                              //console.log("ket qua");
+                              //console.log(data);
+                              //   if (data.length==0) {
+                              //     console.log("check")
+                              //             return res.status(401).send("loi");
+                              //   }
+                              req.foodfacility = data;
+
+                              // console.log(req.foodfacility);
+                    })
+                    .then((data) => {
+                              //console.log("dkm");
+                              // console.log(req.foodfacility);
+                              if (req.foodfacility.length == 0) {
+                                        console.log("check");
+                                        res.status(404);
+                                        return res.send(
+                                                  "FoodFacility not found"
+                                        );
+                              }
+                              next();
+                    });
+}
+function authGetFoodFacility(req, res, next) {
+          //console.log(req.foodfacility);
+          if (!canViewFoodFacility(req, req.foodfacility)) {
+                    //console.log("doan nay");
+                    res.status(401);
+                    return res.send("Not Allowed");
+          }
+          next();
+}
+function authDeleteFoodFacility(req, res, next) {
+          if (!canDeleteFoodFacility(req, req.foodfacility)) {
+                    res.status(401);
+                    return res.send("Not Allowed");
+          }
+          next();
+}
+
 module.exports = router;
