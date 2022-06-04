@@ -123,22 +123,28 @@ var foodfacilitySchema = new mongoose.Schema(
           { timestamps: true }
 );
 var checkfacilitySchema = new mongoose.Schema({
-          decision_date: Date,
-          conduct_date: Date,
-          end_date: Date,
-          announcement_date: Date,
-          examined_foodsample: {
-                    type: String,
-                    lowercase: true,
-          },
-          handling_violations: [String],
+    start_date: Date,
+    end_date: Date,
+    food_sample: [{
+      id: String,
+      name: String,
+      unit: String,
+      start_date: Date,
+      end_date: Date,
+              result: true,
+    }],
+    decision: [String],
 
-          foodfacility_number: [
-                    {
-                              type: Schema.Types.ObjectId,
-                              ref: "FoodFacility",
-                    },
-          ],
+    confirm: Boolean,
+
+    facility_number: [
+              {
+                        type: Schema.Types.ObjectId,
+                        ref: "FoodFacility",
+              },
+    ],
+    specialist_id: String,
+
 });
 
 var foodsamplingSchema = new mongoose.Schema({
