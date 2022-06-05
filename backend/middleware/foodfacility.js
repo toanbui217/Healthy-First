@@ -6,14 +6,14 @@ var bcrypt = require("bcryptjs");
 const { ROLE } = require("../models/account.model");
 
 function canViewFoodFacility(req, foodfacility) {
-          //console.log("ket qua");
-          //console.log(req.district);
-          //console.log(foodfacility[0].address.district)
+  //console.log("ket qua");
+  //console.log(req.district);
+  //console.log(foodfacility[0].address.district)
 
-          return (
-                    req.role == ROLE.ADMIN ||
-                    req.district === foodfacility[0].address.district
-          );
+  return (
+    req.role == ROLE.ADMIN ||
+    req.district.includes(foodfacility[0].address.district)
+  );
 }
 // function scopedFoodFacilitys(req, foodfacility) {
 //           if (req.role === ROLE.ADMIN) return projects;
@@ -23,10 +23,10 @@ function canViewFoodFacility(req, foodfacility) {
 //           );
 // }
 function canDeleteFoodFacility(req, foodfacility) {
-          returnreq.district === foodfacility[0].address.district;
+  return req.district.includes(foodfacility[0].address.district);
 }
 module.exports = {
-          canViewFoodFacility,
+  canViewFoodFacility,
 
-          canDeleteFoodFacility,
+  canDeleteFoodFacility,
 };

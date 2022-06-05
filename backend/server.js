@@ -12,7 +12,8 @@ const rewrite = require("express-urlrewrite");
 const auth = require("./middleware/auth");
 var bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-
+const sanitize = require("mongo-sanitize");
+const filter = require("content-filter");
 //can hong 2 dong
 const mongoose = require("mongoose");
 const Account = mongoose.model("Account");
@@ -20,11 +21,12 @@ var app = express();
 
 //app.use(express.static('./filestatuc'))
 app.use(
-          bodyparser.urlencoded({
-                    extended: true,
-          })
+  bodyparser.urlencoded({
+    extended: true,
+  })
 );
 app.use(bodyparser.json());
+app.use(filter());
 //viet lai dinh tuyen url
 //https://www.npmjs.com/package/express-urlrewrite
 //app.use(rewrite(/^\/f(\w+)/, "/foodfacility/$1"));
@@ -47,80 +49,75 @@ app.use(bodyparser.json());
 // });
 
 app.post("/login", (req, res) => {
-          // const username = req.body.username;
-          // const user = { name: username };
-          // const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
-          // res.json({ accessToken: accessToken });
-          //console.log(req.body);
-          //   const username = req.body.username;
-          //   const user = { name: username };
-          //   const accessToken = generateAccessToken(user);
-          //https://viblo.asia/p/refresh-token-la-gi-cach-hoat-dong-co-khac-gi-so-voi-token-khong-E375zQB2lGW
+  // const username = req.body.username;
+  // const user = { name: username };
+  // const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
+  // res.json({ accessToken: accessToken });
+  //console.log(req.body);
+  //   const username = req.body.username;
+  //   const user = { name: username };
+  //   const accessToken = generateAccessToken(user);
+  //https://viblo.asia/p/refresh-token-la-gi-cach-hoat-dong-co-khac-gi-so-voi-token-khong-E375zQB2lGW
 
-          // refreshTokens.push(refreshToken);
-          //   console.log(refreshTokens);
+  // refreshTokens.push(refreshToken);
+  //   console.log(refreshTokens);
 
-          //   res.json({ accessToken: accessToken, refreshToken: refreshToken });
-          const { username, password } = req.body;
-          //   const refreshToken = jwt.sign(
-          //             username,
-          //             process.env.REFRESH_TOKEN_SECRET,
-          //             { expiresIn: "900h" }
-          //   );
-          //   refreshTokens.push(refreshToken);
-          //   console.log(refreshTokens);
-          Account.findOne({ username })
-                    .then(async (data) => {
-                              if (!data) {
-                                        return res.status(401).send({
-                                                  message: "User doesn't exist",
-                                        });
-                              }
+  //   res.json({ accessToken: accessToken, refreshToken: refreshToken });
+  const { username, password } = sanitize(req.body);
+  //   const refreshToken = jwt.sign(
+  //             username,
+  //             process.env.REFRESH_TOKEN_SECRET,
+  //             { expiresIn: "900h" }
+  //   );
+  //   refreshTokens.push(refreshToken);
+  //   console.log(refreshTokens);
+  Account.findOne({ username })
+    .then(async (data) => {
+      if (!data) {
+        return res.status(401).send({
+          message: "User doesn't exist",
+        });
+      }
 
-                              const isPasswordCorrect = await bcrypt.compare(
-                                        password,
-                                        data.password
-                              );
+      const isPasswordCorrect = await bcrypt.compare(password, data.password);
 
-                              if (!isPasswordCorrect) {
-                                        return res.status(401).send({
-                                                  message: "Invalid username or password!",
-                                        });
-                              }
+      if (!isPasswordCorrect) {
+        return res.status(401).send({
+          message: "Invalid username or password!",
+        });
+      }
 
-                              const token = jwt.sign(
-                                        { username: data.username },
-                                        process.env.ACCESS_TOKEN_SECRET,
-                                        { expiresIn: "900h" }
-                              );
+      const token = jwt.sign(
+        { username: data.username },
+        process.env.ACCESS_TOKEN_SECRET,
+        { expiresIn: "900h" }
+      );
 
-                              res.status(200).send({
-                                        username: username,
-                                        id: data._id,
-                                        role: data.role,
-                                        token: token,
-                                        district: data.district,
-                              });
-                    })
-                    .catch((err) => {
-                              res.status(500).send({
-                                        message:
-                                                  "Something went wrong when login" +
-                                                  err,
-                              });
-                    });
+      res.status(200).send({
+        username: username,
+        id: data._id,
+        role: data.role,
+        token: token,
+        district: data.district,
+      });
+    })
+    .catch((err) => {
+      res.status(403).send({
+        message: "Nosql injection when login : " + err,
+      });
+    });
 });
 app.use(auth.auth);
 
 app.listen(3000, () => {
-          console.log("Express server started at port :3000");
+  console.log("Express server started at port :3000");
 });
 //rewirite chuan, dung , chinh xac
 app.use(rewrite("/co-so/*", "/foodfacility/$1"), function (req, res, next) {
-          var old_url = req.url;
-          //console.log(req.url);
-          //req.url = "/index";
-          next();
+  var old_url = req.url;
+  //console.log(req.url);
+  //req.url = "/index";
+  next();
 });
 app.use(rewrite("/tai-khoan/*", "/account/$1"), function (req, res, next) {
   var old_url = req.url;
@@ -133,7 +130,7 @@ app.use("/foodfacility", foodfacilityController);
 app.use("/account", accountController);
 
 app.all("*", (req, res) => {
-          res.status(404).send("<h1>resouces not found</h1>");
+  res.status(404).send("<h1>resouces not found</h1>");
 });
 // {
 //     "fullname": "Địa điểm kinh doanh số 4 - Công ty TNHH thực phẩm Nông trang",

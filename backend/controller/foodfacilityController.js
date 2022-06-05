@@ -34,7 +34,11 @@ router.get("/one/", auth.auth, (req, res) => {
 //them 1 co so
 router.post("/", (req, res) => {
   //403 là máy chủ hiểu nhưng không trả về gì
-  if (req.role === ROLE.BASIC && req.district != req.body.district) {
+  if (
+    req.role === ROLE.BASIC &&
+    !req.district.includes(req.body.district)
+    //&& req.district != req.body.district  req.body.district not in
+  ) {
     // console.log("lol");
     return res.status(403).send("Not allowed");
   }
@@ -101,8 +105,11 @@ router.post("/", (req, res) => {
 // lay danh sach co so
 router.get("/list", (req, res) => {
   let query = null;
+  console.log(req.district);
+  // req.district=["dong_da","dong_anh","nam_tu_liem"];
+  console.log(req.district.length);
   if (req.role == ROLE.BASIC) {
-    query = { "address.district": req.district };
+    query = { "address.district": { $in: req.district } };
   }
   //   redisClient.get("list",(error,list)=>{
   //       console.log(list);
@@ -115,7 +122,8 @@ router.get("/list", (req, res) => {
   //   })
   redisClient.get("list").then((data) => {
     // if (error) console.error(error);
-    if (data != null) {
+    //data != null
+    if (data != null && req.role != ROLE.BASIC) {
       console.log("hit");
       return res.json(JSON.parse(data));
     } else {
@@ -159,7 +167,7 @@ router.get("/list", (req, res) => {
 router.get("/listbusiness", (req, res) => {
   let query = null;
   if (req.role == ROLE.BASIC) {
-    query = { "address.district": req.district };
+    query = { "address.district": { $in: req.district } };
   }
 
   FoodFacility.find(query)
@@ -211,10 +219,7 @@ router.get("/listlimit", (req, res) => {
   //chua phan quyen
   let query = null;
   if (req.role == ROLE.BASIC) {
-    query = {
-      // fullname: { $regex: search },
-      "address.district": req.district,
-    };
+    query = { "address.district": { $in: req.district } };
   }
   if (filterType == "or" && searchType == "fullname") {
     FoodFacility.find({
@@ -442,7 +447,7 @@ router.get("/listfoodcertification", (req, res) => {
   console.log(queryDate);
   let query = null;
   if (req.role == ROLE.BASIC) {
-    query = { "address.district": req.district };
+    query = { "address.district": { $in: req.district } };
   }
   FoodFacility.find(query)
     .populate({
@@ -486,7 +491,7 @@ router.get("/listfoodnotcertification", (req, res) => {
   // vả  conditon
   let query = null;
   if (req.role == ROLE.BASIC) {
-    query = { "address.district": req.district };
+    query = { "address.district": { $in: req.district } };
   }
   FoodFacility.find(query)
     .populate({
@@ -535,7 +540,7 @@ router.post("/listnotcertificationcheck", (req, res) => {
 
   let query = null;
   if (req.role == ROLE.BASIC) {
-    query = { "address.district": req.district };
+    query = { "address.district": { $in: req.district } };
   }
 
   console.log(req.body.status);
@@ -599,7 +604,8 @@ router.post("/insertmultiple", (req, res) => {
   // for (var index = 0; index < studentList.length; index++) {
   //    var food = foodfacilityList[index];
   for (let food of foodfacilityList) {
-    if (food.district != req.district && req.role == "SPECIALIST") {
+    //!req.district.includes(req.body.district
+    if (!req.district.includes(food.district) && req.role == "SPECIALIST") {
       return res.status(403).send("not allowed");
     }
     const certi = new Certification({
