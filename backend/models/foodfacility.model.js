@@ -55,6 +55,9 @@ var certificationSchema = new mongoose.Schema({
 //fullname address phone_number business_type certification
 var foodfacilitySchema = new mongoose.Schema(
           {
+                    id: {
+                              type: String,
+                    },
                     fullname: {
                               type: String,
                               required: "This field is required.",
@@ -123,27 +126,27 @@ var foodfacilitySchema = new mongoose.Schema(
           { timestamps: true }
 );
 var checkfacilitySchema = new mongoose.Schema({
+  id: String,
+  start_date: Date,
+  food_sample: [{
+    id: String,
+    name: String,
+    unit: String,
     start_date: Date,
     end_date: Date,
-    food_sample: [{
-      id: String,
-      name: String,
-      unit: String,
-      start_date: Date,
-      end_date: Date,
-              result: true,
-    }],
-    decision: [String],
-
-    confirm: Boolean,
-
-    facility_number: [
-              {
-                        type: Schema.Types.ObjectId,
-                        ref: "FoodFacility",
-              },
-    ],
-    specialist_id: String,
+    result: Boolean,
+  }],
+  decision: [String],
+  
+  confirm: Boolean,
+  
+  facility_id: [
+            {
+                      type: Schema.Types.ObjectId,
+                      ref: "FoodFacility",
+            },
+  ],
+  specialist: String,
 
 });
 
