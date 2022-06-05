@@ -246,11 +246,14 @@ router.get("/listlimit", (req, res) => {
           //status: { $ne: "thu hoi" },
         },
       })
-      .skip(page * limit)
-      .limit(limit)
+      // .skip(page * limit)
+      // .limit(limit)
 
       .then((data) => {
-        res.send(data);
+        res.send({
+          total: data.length,
+          facilities: data.slice(page * limit, (page + 1) * limit),
+        });
       })
       .catch((err) => {
         res.send(err);
@@ -278,11 +281,15 @@ router.get("/listlimit", (req, res) => {
           //status: { $ne: "thu hoi" },
         },
       })
-      .skip(page * limit)
-      .limit(limit)
+
+      // .skip(page * limit)
+      // .limit(limit)
 
       .then((data) => {
-        res.send(data);
+        res.send({
+          total: data.length,
+          facilities: data.slice(page * limit, (page + 1) * limit),
+        });
       })
       .catch((err) => {
         res.send(err);
@@ -310,11 +317,14 @@ router.get("/listlimit", (req, res) => {
           //status: { $ne: "thu hoi" },
         },
       })
-      .skip(page * limit)
-      .limit(limit)
+      // .skip(page * limit)
+      // .limit(limit)
 
       .then((data) => {
-        res.send(data);
+        res.send({
+          total: data.length,
+          facilities: data.slice(page * limit, (page + 1) * limit),
+        });
       })
       .catch((err) => {
         res.send(err);
@@ -349,11 +359,14 @@ router.get("/listlimit", (req, res) => {
           //status: { $ne: "thu hoi" },
         },
       })
-      .skip(page * limit)
-      .limit(limit)
+      // .skip(page * limit)
+      // .limit(limit)
 
       .then((data) => {
-        res.send(data);
+        res.send({
+          total: data.length,
+          facilities: data.slice(page * limit, (page + 1) * limit),
+        });
       })
       .catch((err) => {
         res.send(err);
