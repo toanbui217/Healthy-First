@@ -38,6 +38,14 @@ app.use(bodyparser.json());
 //                     app.use(auth.auth);
 //           }
 // });
+//rewirite chuan, dung , chinh xac
+// app.use(rewrite("/dang-nhap/*", "/login/$1"), function (req, res, next) {
+//   var old_url = req.url;
+//   console.log(req.url);
+//   //req.url = "/index";
+//   next();
+// });
+
 app.post("/login", (req, res) => {
           // const username = req.body.username;
           // const user = { name: username };
@@ -107,7 +115,19 @@ app.use(auth.auth);
 app.listen(3000, () => {
           console.log("Express server started at port :3000");
 });
-
+//rewirite chuan, dung , chinh xac
+app.use(rewrite("/co-so/*", "/foodfacility/$1"), function (req, res, next) {
+          var old_url = req.url;
+          //console.log(req.url);
+          //req.url = "/index";
+          next();
+});
+app.use(rewrite("/tai-khoan/*", "/account/$1"), function (req, res, next) {
+  var old_url = req.url;
+  //console.log(req.url);
+  //req.url = "/index";
+  next();
+});
 app.use("/foodfacility", foodfacilityController);
 
 app.use("/account", accountController);

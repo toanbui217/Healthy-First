@@ -60,9 +60,8 @@ function sortDate(noti1, noti2) {
 }
 
 router.delete("/logout", (req, res) => {
-          refreshTokens = refreshTokens.filter(
-                    (token) => token !== req.body.token
-          );
+          //console.log(token);
+          refreshTokens = refreshTokens.filter((token) => token !== req.token);
           res.status(204);
 });
 router.post("/token", (req, res) => {
@@ -104,12 +103,13 @@ router.post("/token", (req, res) => {
 router.post("/create/", authRole(ROLE.ROOT), (req, res) => {
           if (
                     !req.body.username ||
-                    !req.body.password ||
-                    !req.body.firstName ||
-                    !req.body.surName ||
-                    !req.body.email ||
-                    !req.body.role ||
-                    !req.body.district
+                    !req.body.password 
+                    // ||
+                    // !req.body.firstName ||
+                    // !req.body.surName ||
+                    // !req.body.email ||
+                    // !req.body.role ||
+                    // !req.body.district
           ) {
                     res.status(400).send({
                               message: "Necessary information can not be empty",
@@ -478,7 +478,7 @@ router.delete("/deleteStudent/", authRole(ROLE.ROOT), (req, res) => {
 });
 
 // lấy thông báo của 1 tài khoản từ id.
-router.get("/getNotification/:id", authRole(ROLE.ADMIN),(req, res) => {
+router.get("/getNotification/:id", authRole(ROLE.ADMIN), (req, res) => {
           if (!req.params.id) {
                     return res
                               .status(400)

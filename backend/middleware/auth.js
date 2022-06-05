@@ -3,13 +3,14 @@ const jwt = require("jsonwebtoken");
 //acess token , refresh token
 exports.auth = async (req, res, next) => {
           try {
-                   // console.log("lol");
+                    // console.log("lol");
                     //console.log(req.headers.authorization);
 
                     const token = req.headers.authorization;
+                    //console.log(token);
                     const isCustomAuth = token.length < 500;
-                    req.role=req.headers.role;
-                    req.district=req.headers.district;
+                    req.role = req.headers.role;
+                    req.district = req.headers.district;
                     console.log("lol");
                     console.log(req.district);
                     //console.log(req.headers.authorization);
