@@ -16,6 +16,14 @@ const {
 const { ROLE } = require("../models/account.model");
 const { Admin } = require("mongodb");
 
+const Redis = require("redis");
+const DEFAULT_EXPIRATION = 3600000;
+const redisClient = Redis.createClient();
+const step = async (_) => {
+          await redisClient.connect();
+};
+step();
+
 router.get("/one/", auth.auth, (req, res) => {
           try {
                     res.status(200).send({ message: "Success author" });
@@ -93,24 +101,49 @@ router.post("/", (req, res) => {
                     });
 });
 // lay danh sach co so
-router.get("/list", authRole(ROLE.ADMIN), (req, res) => {
-          FoodFacility.find({}, (err, docs) => {
-                    if (!err) {
-                              //       res.render("foodfacility/list", {
+router.get("/list", (req, res) => {
+          let query = null;
+          if (req.role == ROLE.BASIC) {
+                    query = { "address.district": req.district };
+          }
+          //   redisClient.get("list",(error,list)=>{
+          //       console.log(list);
+          //       if(error) console.error(error)
+          //       if(list!=null){
+          //           return res.json(JSON.parse(list))
+          //       }else{
 
-                              //                 list: docs.map((doc) => doc.toJSON()),
-                              //       });
-                              list: docs.map((doc) => doc.toJSON());
-                              res.status(200).send(
-                                        docs.map((doc) => doc.toJSON())
-                              );
-
-                              //  res.json(docs.map((doc) => doc.toJSON()));
+          //       }
+          //   })
+          redisClient.get("list").then((data) => {
+                    // if (error) console.error(error);
+                    if (data != null) {
+                              console.log("hit");
+                              return res.json(JSON.parse(data));
                     } else {
-                              console.log(
-                                        "Error in retrieving foodfacility list :" +
-                                                  err
-                              );
+                              console.log("miss");
+                              FoodFacility.find(query, (err, data) => {
+                                        if (!err) {
+                                                  //       res.render("foodfacility/list", {
+
+                                                  //                 list: docs.map((doc) => doc.toJSON()),
+                                                  //       });
+                                                  //  list: docs.map((doc) => doc.toJSON());
+                                                  redisClient.setEx(
+                                                            "list",
+                                                            DEFAULT_EXPIRATION,
+                                                            JSON.stringify(data)
+                                                  );
+                                                  res.status(200).send(data);
+
+                                                  //  res.json(docs.map((doc) => doc.toJSON()));
+                                        } else {
+                                                  console.log(
+                                                            "Error in retrieving foodfacility list :" +
+                                                                      err
+                                                  );
+                                        }
+                              });
                     }
           });
 });
@@ -437,7 +470,7 @@ router.post("/insertmultiple", (req, res) => {
 });
 //tao moi n giay phep
 ////update n co so
-router.post("/insertmultiplecer",authRole(ROLE.ADMIN), (req, res) => {
+router.post("/insertmultiplecer", authRole(ROLE.ADMIN), (req, res) => {
           var certificationList = req.body;
 
           // for (var index = 0; index < studentList.length; index++) {
@@ -501,7 +534,7 @@ router.post("/insertmultiplecer",authRole(ROLE.ADMIN), (req, res) => {
 });
 // cap moi , thu hoi , ra han
 //cap moi giay chung nhan cho co sow //dung req.body hoawc req.params
-router.put("/createnew/:id", authRole(ROLE.ADMIN),(req, res) => {
+router.put("/createnew/:id", authRole(ROLE.ADMIN), (req, res) => {
           //   FoodFacility.findById(req.params.id, (err, doc) => {
           //             if (!err) {
           //                       res.render("foodfacility/addOrEdit", {
@@ -539,7 +572,7 @@ router.put("/createnew/:id", authRole(ROLE.ADMIN),(req, res) => {
           );
 });
 //gia han giay chung nhan
-router.put("/extenddate/:id",authRole(ROLE.ADMIN), (req, res) => {
+router.put("/extenddate/:id", authRole(ROLE.ADMIN), (req, res) => {
           //   FoodFacility.findById(req.params.id, (err, doc) => {
           //             if (!err) {
           //                       res.render("foodfacility/addOrEdit", {
@@ -583,7 +616,7 @@ router.put("/extenddate/:id",authRole(ROLE.ADMIN), (req, res) => {
                     });
 });
 //thu hoi giay chugn nhan
-router.put("/recallcertification/:id",authRole(ROLE.ADMIN), (req, res) => {
+router.put("/recallcertification/:id", authRole(ROLE.ADMIN), (req, res) => {
           const certificationID = req.body.certificationID;
           //Certification.findByIdAndRemove(certificationID, (err, doc));
           Certification.findOneAndUpdate(
@@ -788,7 +821,7 @@ router.delete("/delete/:id", (req, res) => {
                     });
 });
 //xoa tat ca ban ghi co so
-router.delete("/deleteall",authRole(ROLE.ADMIN), (req, res) => {
+router.delete("/deleteall", authRole(ROLE.ADMIN), (req, res) => {
           // FoodFacility.deleteMany();
           FoodFacility.deleteMany({})
                     .then((data) => {
@@ -805,7 +838,7 @@ router.delete("/deleteall",authRole(ROLE.ADMIN), (req, res) => {
                     });
 });
 //xoa tat ca ban ghi giay phep
-router.delete("/deleteallcer",authRole(ROLE.ADMIN), (req, res) => {
+router.delete("/deleteallcer", authRole(ROLE.ADMIN), (req, res) => {
           Certification.deleteMany({})
                     .then((data) => {
                               res.send({

@@ -78,42 +78,15 @@ var foodfacilitySchema = new mongoose.Schema(
                               minlength: 5,
                               maxlength: 30,
                     },
-                    environment: {
-                              type: String,
-                              lowercase: true,
-                    },
-                    appliances: {
-                              type: String,
-                              lowercase: true,
-                    },
-                    water_source: {
-                              type: String,
-                              lowercase: true,
-                    },
-                    ingredients: {
-                              type: String,
-                              lowercase: true,
-                    },
-                    food_preservation: {
-                              type: String,
-                              lowercase: true,
-                    },
-                    waste_treatment: {
-                              type: String,
-                              lowercase: true,
-                    },
-                    owners: {
-                              type: String,
-                              lowercase: true,
-                    },
-                    processing: {
-                              type: String,
-                              lowercase: true,
-                    },
-                    business_paper: {
-                              type: String,
-                              lowercase: true,
-                    },
+                    environment: Boolean,
+                    appliances: Boolean,
+                    water_source: Boolean,
+                    ingredients: Boolean,
+                    food_preservation: Boolean,
+                    waste_treatment: Boolean,
+                    owners: Boolean,
+                    processing: Boolean,
+                    business_paper: Boolean,
                     certification_number: {
                               type: String,
                               luppercase: true,
@@ -126,28 +99,29 @@ var foodfacilitySchema = new mongoose.Schema(
           { timestamps: true }
 );
 var checkfacilitySchema = new mongoose.Schema({
-  id: String,
-  start_date: Date,
-  food_sample: [{
-    id: String,
-    name: String,
-    unit: String,
-    start_date: Date,
-    end_date: Date,
-    result: Boolean,
-  }],
-  decision: [String],
-  
-  confirm: Boolean,
-  
-  facility_id: [
-            {
-                      type: Schema.Types.ObjectId,
-                      ref: "FoodFacility",
-            },
-  ],
-  specialist: String,
+          id: String,
+          start_date: Date,
+          food_sample: [
+                    {
+                              id: String,
+                              name: String,
+                              unit: String,
+                              start_date: Date,
+                              end_date: Date,
+                              result: Boolean,
+                    },
+          ],
+          decision: [String],
 
+          confirm: Boolean,
+
+          facility_id: [
+                    {
+                              type: Schema.Types.ObjectId,
+                              ref: "FoodFacility",
+                    },
+          ],
+          specialist: String,
 });
 
 var foodsamplingSchema = new mongoose.Schema({

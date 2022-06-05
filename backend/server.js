@@ -54,13 +54,13 @@ app.post("/login", (req, res) => {
 
           //   res.json({ accessToken: accessToken, refreshToken: refreshToken });
           const { username, password } = req.body;
-        //   const refreshToken = jwt.sign(
-        //             username,
-        //             process.env.REFRESH_TOKEN_SECRET,
-        //             { expiresIn: "900h" }
-        //   );
-        //   refreshTokens.push(refreshToken);
-        //   console.log(refreshTokens);
+          //   const refreshToken = jwt.sign(
+          //             username,
+          //             process.env.REFRESH_TOKEN_SECRET,
+          //             { expiresIn: "900h" }
+          //   );
+          //   refreshTokens.push(refreshToken);
+          //   console.log(refreshTokens);
           Account.findOne({ username })
                     .then(async (data) => {
                               if (!data) {
@@ -91,7 +91,7 @@ app.post("/login", (req, res) => {
                                         id: data._id,
                                         role: data.role,
                                         token: token,
-                                        district:data.district,
+                                        district: data.district,
                               });
                     })
                     .catch((err) => {
