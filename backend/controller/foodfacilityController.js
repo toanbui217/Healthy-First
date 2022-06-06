@@ -103,8 +103,7 @@ router.post("/", (req, res) => {
     });
 });
 // lay danh sach co so
-router.get("/list",authRole(ROLE.ADMIN), (req, res) => {
-  
+router.get("/list", authRole(ROLE.ADMIN), (req, res) => {
   //   redisClient.get("list",(error,list)=>{
   //       console.log(list);
   //       if(error) console.error(error)
@@ -116,7 +115,7 @@ router.get("/list",authRole(ROLE.ADMIN), (req, res) => {
   //   })
   redisClient.get("list").then((data) => {
     // if (error) console.error(error);
-    if (data!=null) {
+    if (data != null) {
       console.log("hit");
       return res.json(JSON.parse(data));
     } else {
@@ -160,7 +159,12 @@ router.get("/listbusiness", (req, res) => {
     .populate("certification", "MFG")
     .sort("MFG")
     .then((data) => {
-      res.send(data);
+      var result = data.filter(function (obj) {
+        return obj.certification !== null; // Or whatever value you want to use
+      });
+      //console.log(result);
+      //console.log(data[0].certification);
+      res.status(200).send(result);
     })
     .catch((err) => {
       res.send(err);
@@ -241,9 +245,15 @@ router.get("/listlimit", (req, res) => {
       // .limit(limit)
 
       .then((data) => {
-        res.send({
-          total: data.length,
-          facilities: data.slice(page * limit, (page + 1) * limit),
+        var result = data.filter(function (obj) {
+          return obj.certification !== null; // Or whatever value you want to use
+        });
+        //console.log(result);
+        //console.log(data[0].certification);
+        //res.status(200).send(result);
+        res.status(200).send({
+          total: result.length,
+          facilities: result.slice(page * limit, (page + 1) * limit),
         });
       })
       .catch((err) => {
@@ -277,9 +287,13 @@ router.get("/listlimit", (req, res) => {
       // .limit(limit)
 
       .then((data) => {
+        var result = data.filter(function (obj) {
+          return obj.certification !== null; // Or whatever value you want to use
+        });
+
         res.send({
-          total: data.length,
-          facilities: data.slice(page * limit, (page + 1) * limit),
+          total: result.length,
+          facilities: result.slice(page * limit, (page + 1) * limit),
         });
       })
       .catch((err) => {
@@ -312,9 +326,13 @@ router.get("/listlimit", (req, res) => {
       // .limit(limit)
 
       .then((data) => {
+        var result = data.filter(function (obj) {
+          return obj.certification !== null; // Or whatever value you want to use
+        });
+
         res.send({
-          total: data.length,
-          facilities: data.slice(page * limit, (page + 1) * limit),
+          total: result.length,
+          facilities: result.slice(page * limit, (page + 1) * limit),
         });
       })
       .catch((err) => {
@@ -354,9 +372,13 @@ router.get("/listlimit", (req, res) => {
       // .limit(limit)
 
       .then((data) => {
+        var result = data.filter(function (obj) {
+          return obj.certification !== null; // Or whatever value you want to use
+        });
+
         res.send({
-          total: data.length,
-          facilities: data.slice(page * limit, (page + 1) * limit),
+          total: result.length,
+          facilities: result.slice(page * limit, (page + 1) * limit),
         });
       })
       .catch((err) => {
@@ -447,7 +469,11 @@ router.get("/listfoodcertification", (req, res) => {
     })
 
     .then((data) => {
-      res.send(data);
+      var result = data.filter(function (obj) {
+        return obj.certification !== null; // Or whatever value you want to use
+      });
+
+      res.status(200).send(result);
     })
     .catch((err) => {
       res.send(err);
@@ -506,7 +532,11 @@ router.get("/listfoodnotcertification", (req, res) => {
       //         }
       // }
       // console.log(data.body[1]);
-      res.send(data);
+      var result = data.filter(function (obj) {
+        return obj.certification !== null; // Or whatever value you want to use
+      });
+
+      res.status(200).send(result);
     })
     .catch((err) => {
       res.send(err);
@@ -537,10 +567,14 @@ router.post("/listnotcertificationcheck", (req, res) => {
     })
     .exec()
     .then((data) => {
-      res.send(data);
+      var result = data.filter(function (obj) {
+        return obj.certification !== null; // Or whatever value you want to use
+      });
+
+      res.status(200).send(result);
     })
     .catch((err) => {
-      res.send(err);
+      res.status(500).send(err);
     });
 });
 
@@ -695,7 +729,7 @@ router.post("/insertmultiplecer", authRole(ROLE.ADMIN), (req, res) => {
       }
     );
   }
-  res.send({
+  res.status(200).send({
     message:
       "successfully added " + certificationList.length + " certiications",
   });
@@ -952,7 +986,7 @@ function updateRecord(req, res) {
 router.delete("/delete/:id", (req, res) => {
   FoodFacility.findByIdAndRemove(req.body._id)
     .then((data) => {
-      res.send({
+      res.status(200).send({
         message: `${data.deletedCount} foodfacility info were deleted successfully!`,
       });
     })
@@ -968,7 +1002,7 @@ router.delete("/deleteall", authRole(ROLE.ADMIN), (req, res) => {
   // FoodFacility.deleteMany();
   FoodFacility.deleteMany({})
     .then((data) => {
-      res.send({
+      res.status(200).send({
         message: `${data.deletedCount} All foodfacility info were deleted successfully!`,
       });
     })
@@ -983,7 +1017,7 @@ router.delete("/deleteall", authRole(ROLE.ADMIN), (req, res) => {
 router.delete("/deleteallcer", authRole(ROLE.ADMIN), (req, res) => {
   Certification.deleteMany({})
     .then((data) => {
-      res.send({
+      res.status(200).send({
         message: `${data.deletedCount} All certification info were deleted successfully!`,
       });
     })
