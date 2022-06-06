@@ -8,6 +8,8 @@ const Certification = mongoose.model("Certification");
 const FoodSampling = mongoose.model("FoodSampling");
 const ObjectId = require("mongodb").ObjectId;
 const auth = require("../middleware/auth");
+const { authRole } = require("../middleware/basicAuth");
+const { ROLE } = require("../models/account.model");
 router.get("/one/", auth.auth, (req, res) => {
   try {
     res.status(200).send({ message: "Success author" });
@@ -17,7 +19,7 @@ router.get("/one/", auth.auth, (req, res) => {
 });
 
 // ke hoach thanh tra
-router.post("/inspection/plan", (req, res) => {
+router.post("/inspection/plan",authRole(ROLE.ADMIN), (req, res) => {
   var duration = req.body.duration;
   var today = new Date();
 
@@ -52,22 +54,91 @@ router.post("/inspection/plan", (req, res) => {
 
 // tra ve danh sach cac co so chuyen vien phu trach
 router.post("/inspection/facility", (req, res) => {
-  FoodFacility.find({})
-    .populate({
-      path: "account",
-      match: {
-        ROLE: "SPECIALIST",
-        specialist_id: req.body.specialist_id,
-        district: FoodFacility.district,
-      },
-    })
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      res.send(err);
-    });
+  // FoodFacility.find({})
+  //   .populate({
+  //     path: "account",
+  //     match: {
+  //       ROLE: "SPECIALIST",
+  //       specialist_id: req.body.specialist_id,
+  //       district: FoodFacility.district,
+  //     },
+  //   })
+  //   .then((data) => {
+  //     res.send(data);
+  //   })
+  //   .catch((err) => {
+  //     res.send(err);
+  //   });
+  CheckFacility.find({
+    "specialist": req.body.id
+  }).then(data=>{
+    console.log(data);
+    res.status(200).send(data);
+  })
+  // Account.findById(req.body.id).then(data=>{
+    
+  //   query = { "address.district": { $in: data.district } };
+  //   //console.log(data);
+  //   FoodFacility.find(query).then(data=>{
+  //     // console.log(data);
+  //     CheckFacility.find({
+  //       "facility_id": {$in: data.map(d=>d._id)}
+  //     }).then(data=>{
+  //       console.log(data)
+  //     })
+  //   })
+  // })
 });
+//tao 1 checke facility
+router.post("/inspection/insert", (req, res) =>{
+  const checkfacility=new CheckFacility({
+     start_date:req.body.start_date,
+     food_sample:req.body.food_sample
+    //  {
+    //      id:req.body.food_sample.id,
+    //      name:req.body.food_sample.name,
+    //      unit:req.body.food_sample.unit,
+    //      start_date:req.body.food_sample.start_date,
+    //      end_date: req.body.food_sample.end_date,
+    //      result:req.body.result,
+    //  }
+     ,
+     decision:req.body.decision,
+     confirm:req.body.confirm,
+     facility_id:req.body.facility_id,
+     specialist:req.body.specialist,
+
+  })
+  checkfacility.save();
+});
+  // start_date: Date,
+  // food_sample: [
+  //   {
+  //     id: String,
+  //     name: String,
+  //     unit: String,
+  //     start_date: Date,
+  //     end_date: Date,
+  //     result: Boolean,
+  //   },
+  // ],
+  // decision: [String],
+
+  // confirm: Boolean,
+
+  // facility_id: [
+  //   {
+  //     type: Schema.Types.ObjectId,
+  //     ref: "FoodFacility",
+  //   },
+  // ],
+  // specialist: {
+  //   type: Schema.Types.ObjectId,
+  //   ref: "Account",
+  // },
+
+
+
 
 // update db cua co so trong qua trinh thanh tra
 router.post("/inspection/update", (req, res) => {

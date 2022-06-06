@@ -14,6 +14,7 @@ var accountSchema = mongoose.Schema(
     surName: String,
     email: String,
     avatarColor: String,
+    facility_id: [],
     role: {
       type: String,
       uppercase: true,
@@ -23,16 +24,8 @@ var accountSchema = mongoose.Schema(
       type: [String],
       lowercase: true,
     },
-    notification: [
-      {
-        read: Boolean,
-        title: String,
-        message: String,
-        createdTime: String,
-      },
-    ],
   },
-  { timestamps: true }
+ 
 );
 mongoose.model("Account", accountSchema);
 module.exports = {

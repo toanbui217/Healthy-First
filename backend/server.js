@@ -13,6 +13,7 @@ const rewrite = require("express-urlrewrite");
 const auth = require("./middleware/auth");
 var bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
 const sanitize = require("mongo-sanitize");
 const filter = require("content-filter");
 //can hong 2 dong
@@ -28,27 +29,8 @@ app.use(
 );
 app.use(bodyparser.json());
 app.use(filter());
-//viet lai dinh tuyen url
-//https://www.npmjs.com/package/express-urlrewrite
-//app.use(rewrite(/^\/f(\w+)/, "/foodfacility/$1"));
-//midleware
-//app.use(setAccount);
 
-// app.get("*", function (req, res, next) {
-//           if (req.url === "/" || req.url === "/login") {
-//                     return next();
-//           } else {
-//                     app.use(auth.auth);
-//           }
-// });
-//rewirite chuan, dung , chinh xac
-// app.use(rewrite("/dang-nhap/*", "/login/$1"), function (req, res, next) {
-//   var old_url = req.url;
-//   console.log(req.url);
-//   //req.url = "/index";
-//   next();
-// });
-
+app.use(cookieParser());
 app.post("/login", (req, res) => {
   // const username = req.body.username;
   // const user = { name: username };
@@ -88,18 +70,33 @@ app.post("/login", (req, res) => {
         });
       }
 
+      const expires = 3600000000; // tính theo giây
       const token = jwt.sign(
         { username: data.username },
         process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "900h" }
+        { expiresIn: expires + "s" }
       );
 
+      res.cookie("token", token, {
+        expires: new Date(Date.now() + 1000 * expires),
+        httpOnly: true,
+      });
+      res.cookie("role", data.role, {
+        expires: new Date(Date.now() + 1000 * expires),
+        httpOnly: true,
+      });
+      res.cookie("district", data.district, {
+        expires: new Date(Date.now() + 1000 * expires),
+        httpOnly: true,
+      });
+
       res.status(200).send({
+        avatar:
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQG5s-pnpsa-iT5R9xesoXWpOfFwNhRFIzQxQ&usqp=CAU",
         username: username,
         id: data._id,
         role: data.role,
-        token: token,
-        district: data.district,
+        // district: data.district,
       });
     })
     .catch((err) => {
@@ -108,6 +105,7 @@ app.post("/login", (req, res) => {
       });
     });
 });
+
 app.use(auth.auth);
 
 app.listen(3000, () => {
@@ -129,8 +127,7 @@ app.use(rewrite("/tai-khoan/*", "/account/$1"), function (req, res, next) {
 app.use("/foodfacility", foodfacilityController);
 
 app.use("/account", accountController);
-app.use("/special",specialistController);
-
+app.use("/special", specialistController);
 
 app.all("*", (req, res) => {
   res.status(404).send("<h1>resouces not found</h1>");

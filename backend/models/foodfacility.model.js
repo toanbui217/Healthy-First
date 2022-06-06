@@ -115,23 +115,12 @@ var checkfacilitySchema = new mongoose.Schema({
 
   confirm: Boolean,
 
-  facility_id: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "FoodFacility",
-    },
-  ],
-  specialist: {
-    type: Schema.Types.ObjectId,
-    ref: "Account",
-  },
+  facility_id: String,
+
+  specialist: String,
 });
 
 var foodsamplingSchema = new mongoose.Schema({
-  environment: {
-    type: String,
-    lowercase: true,
-  },
   appliances: {
     type: String,
     lowercase: true,

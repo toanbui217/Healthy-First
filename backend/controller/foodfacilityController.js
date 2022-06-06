@@ -196,245 +196,90 @@ router.get("/listbusiness", (req, res) => {
 });
 
 // lay n ban ghi bat dau tu trang
-router.get("/listlimit", (req, res) => {
+router.post("/listlimit", (req, res) => {
+  console.log(req.cookies);
   let start_date = req.body.start_date;
   let end_date = req.body.end_date;
   let page = req.body.page - 1;
   let limit = req.body.limit;
   let search = req.body.search;
   let business_type = req.body.business_type;
-  let filterType = req.body.filterType; //and hoac or
-  let searchType = req.body.searchType; //fullname hoac certification
-  let temp = req.body.criteriaFilter;
+  let filter_type = req.body.filter_type; // and hoac or
+  let search_type = req.body.search_type; // fullname hoac certification
+  let temp = req.body.criteria_filter;
+
   //chua phan quyen
-  let query = null;
+  let query = {};
+
   if (req.role == ROLE.BASIC) {
-    query = { "address.district": { $in: req.district } };
+    query["address.district"] = req.district;
   }
-  if (filterType == "or" && searchType == "fullname") {
-    FoodFacility.find({
-      query,
-      fullname: { $regex: search },
-      business_type: { $all: business_type },
-      $or: [
-        { environment: temp.environment },
-        { appliances: temp.appliances },
-        { water_source: temp.water_source },
-        { ingredients: temp.ingredients },
-        {
-          food_preservation: temp.food_preservation,
-        },
-        {
-          waste_treatment: temp.waste_treatment,
-        },
-        { owners: temp.owners },
-        { processing: temp.processing },
-      ],
-    })
-      .populate({
-        path: "certification",
-        match: {
-          MFG: { $lte: start_date },
-          expiration_date: {
-            $gte: end_date,
-          },
-          //status: { $ne: "thu hoi" },
-        },
-      })
-      // .skip(page * limit)
-      // .limit(limit)
 
-      .then((data) => {
-        var result = data.filter(function (obj) {
-          return obj.certification !== null; // Or whatever value you want to use
-        });
-        //console.log(result);
-        //console.log(data[0].certification);
-        //res.status(200).send(result);
-        res.status(200).send({
-          total: result.length,
-          facilities: result.slice(page * limit, (page + 1) * limit),
-        });
-      })
-      .catch((err) => {
-        res.send(err);
-      });
-  } else if (filterType == "and" && searchType == "fullname") {
-    FoodFacility.find({
-      fullname: { $regex: search },
-      business_type: { $all: business_type },
-      environment: temp.environment,
-      appliances: temp.appliances,
-      water_source: temp.water_source,
-      ingredients: temp.ingredients,
-      food_preservation: temp.food_preservation,
-      waste_treatment: temp.waste_treatment,
-      owners: temp.owners,
-      processing: temp.processing,
-    })
-      .populate({
-        path: "certification",
-        match: {
-          MFG: { $lte: start_date },
-          expiration_date: {
-            $gte: end_date,
-          },
-          //status: { $ne: "thu hoi" },
-        },
-      })
-
-      // .skip(page * limit)
-      // .limit(limit)
-
-      .then((data) => {
-        var result = data.filter(function (obj) {
-          return obj.certification !== null; // Or whatever value you want to use
-        });
-
-        res.send({
-          total: result.length,
-          facilities: result.slice(page * limit, (page + 1) * limit),
-        });
-      })
-      .catch((err) => {
-        res.send(err);
-      });
-  } else if (filterType == "and" && searchType == "certification") {
-    FoodFacility.find({
-      certification_number: { $regex: search },
-      business_type: { $all: business_type },
-      environment: temp.environment,
-      appliances: temp.appliances,
-      water_source: temp.water_source,
-      ingredients: temp.ingredients,
-      food_preservation: temp.food_preservation,
-      waste_treatment: temp.waste_treatment,
-      owners: temp.owners,
-      processing: temp.processing,
-    })
-      .populate({
-        path: "certification",
-        match: {
-          MFG: { $lte: start_date },
-          expiration_date: {
-            $gte: end_date,
-          },
-          //status: { $ne: "thu hoi" },
-        },
-      })
-      // .skip(page * limit)
-      // .limit(limit)
-
-      .then((data) => {
-        var result = data.filter(function (obj) {
-          return obj.certification !== null; // Or whatever value you want to use
-        });
-
-        res.send({
-          total: result.length,
-          facilities: result.slice(page * limit, (page + 1) * limit),
-        });
-      })
-      .catch((err) => {
-        res.send(err);
-      });
-  } else if (filterType == "or" && searchType == "certification") {
-    FoodFacility.find({
-      query,
-      certification_number: { $regex: search },
-      business_type: { $all: business_type },
-      $or: [
-        { environment: temp.environment },
-        { appliances: temp.appliances },
-        { water_source: temp.water_source },
-        { ingredients: temp.ingredients },
-        {
-          food_preservation: temp.food_preservation,
-        },
-        {
-          waste_treatment: temp.waste_treatment,
-        },
-        { owners: temp.owners },
-        { processing: temp.processing },
-      ],
-    })
-      .populate({
-        path: "certification",
-        match: {
-          MFG: { $lte: start_date },
-          expiration_date: {
-            $gte: end_date,
-          },
-          //status: { $ne: "thu hoi" },
-        },
-      })
-      // .skip(page * limit)
-      // .limit(limit)
-
-      .then((data) => {
-        var result = data.filter(function (obj) {
-          return obj.certification !== null; // Or whatever value you want to use
-        });
-
-        res.send({
-          total: result.length,
-          facilities: result.slice(page * limit, (page + 1) * limit),
-        });
-      })
-      .catch((err) => {
-        res.send(err);
-      });
+  if (business_type.length > 0) {
+    query["business_type"] = { $all: business_type };
   }
-  // }
-  // console.log(req.body.criteriaFilter);
-  //   FoodFacility.find({
-  //             fullname: { $regex: search },
-  //             business_type:{ $all : business_type },
-  //             environment: temp.environment,
-  //             appliances: temp.appliances,
-  //             water_source: temp.water_source,
-  //             ingredients: temp.ingredients,
-  //             food_preservation: temp.food_preservation,
-  //             waste_treatment: temp.waste_treatment,
-  //             owners: temp.owners,
-  //             processing: temp.processing,
-  //   })
-  //             .populate({
-  //                       path: "certification",
-  //                       match: {
-  //                                 MFG: { $lte: start_date },
-  //                                 expiration_date: { $gte: end_date },
-  //                                 //status: { $ne: "thu hoi" },
-  //                       },
-  //             })
-  //             .skip(page * limit)
-  //             .limit(limit)
 
-  //             .then((data) => {
-  //                       res.send(data);
-  //             })
-  //             .catch((err) => {
-  //                       res.send(err);
-  //             });
+  if (search != "") {
+    query[search_type == "fullname" ? "fullname" : "certification_number"] = {
+      $regex: search,
+    };
+  }
 
-  //   FoodFacility.find(query, (err, data) => {
-  //             if (!err) {
-  //                       //       res.render("foodfacility/list", {
+  query[filter_type == "and" ? "$and" : "$or"] = [
+    { environment: temp.environment },
+    { appliances: temp.appliances },
+    { water_source: temp.water_source },
+    { ingredients: temp.ingredients },
+    {
+      food_preservation: temp.food_preservation,
+    },
+    {
+      waste_treatment: temp.waste_treatment,
+    },
+    { owners: temp.owners },
+    { processing: temp.processing },
+  ];
 
-  //                       //                 list: docs.map((doc) => doc.toJSON()),
-  //                       //       });
-  //                       console.log(data);
-  //                       res.status(200).send(data);
-  //                       //  res.json(docs.map((doc) => doc.toJSON()));
-  //             } else {
-  //                       console.log(
-  //                                 "Error in retrieving foodfacility list :" +
-  //                                           err
-  //                       );
-  //             }
-  //   })
-  //             .limit(10)
-  //             .skip(page_number * 10);
+  FoodFacility.find(query)
+    .populate({
+      path: "certification",
+      match: {
+        MFG: { $lte: start_date },
+        expiration_date: {
+          $gte: end_date,
+        },
+      },
+    })
+    .then((data) => {
+      if (search_type == "fullname") {
+        var data = [
+          ...data.filter(
+            (item) => item.fullname.toLowerCase().indexOf(search) == 0
+          ),
+          ...data.filter(
+            (item) => item.fullname.toLowerCase().indexOf(search) > 0
+          ),
+        ];
+      } else {
+        var data = [
+          ...data.filter(
+            (item) =>
+              item.certification_number.toLowerCase().indexOf(search) == 0
+          ),
+          ...data.filter(
+            (item) =>
+              item.certification_number.toLowerCase().indexOf(search) > 0
+          ),
+        ];
+      }
+      res.send({
+        total: data.length,
+        facilities: data.slice(page * limit, (page + 1) * limit),
+      });
+    })
+    .catch((err) => {
+      res.send(err);
+    });
 });
 
 // Lọc danh sách các cơ sở đủ điều kiện an toàn thực phẩm (có giấy chứng nhận đang còn hiệu lực.
