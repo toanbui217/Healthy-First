@@ -100,7 +100,7 @@ router.post("/token", (req, res) => {
 
 // Tạo 1 tài khoản mới
 //router.post("/login", (req, res) =>
-router.post("/create/", authRole(ROLE.ROOT), (req, res) => {
+router.post("/create/", authRole(ROLE.ADMIN), (req, res) => {
           if (
                     !req.body.username ||
                     !req.body.password 
@@ -207,7 +207,7 @@ router.post("/create/", authRole(ROLE.ROOT), (req, res) => {
 });
 
 // Xóa 1 tài khoản
-router.delete("/delete/:id", authRole(ROLE.ROOT), (req, res) => {
+router.delete("/delete/:id", authRole(ROLE.ADMIN), (req, res) => {
           const id = req.params.id;
 
           Account.findByIdAndRemove(id, { useFindAndModify: false })
@@ -444,7 +444,7 @@ router.get("/getByUsername/:username", (req, res) => {
                     });
 });
 // Xóa tât cả các tài khoản .
-router.delete("/delete/", authRole(ROLE.ROOT), (req, res) => {
+router.delete("/delete/", authRole(ROLE.ADMIN), (req, res) => {
           Account.deleteMany({})
                     .then((data) => {
                               res.send({
@@ -460,8 +460,8 @@ router.delete("/delete/", authRole(ROLE.ROOT), (req, res) => {
                     });
 });
 
-// Xóa tât cả các tài khoản trừ mamnager va root.
-router.delete("/deleteStudent/", authRole(ROLE.ROOT), (req, res) => {
+// Xóa tât cả các tài khoản trừ mamnager va ADMIN.
+router.delete("/deleteStudent/", authRole(ROLE.ADMIN), (req, res) => {
           Account.deleteMany({ role: ["", "SPECIALIST"] })
                     .then((data) => {
                               res.send({

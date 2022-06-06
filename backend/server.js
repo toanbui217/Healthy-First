@@ -8,6 +8,7 @@ const exphbs = require("express-handlebars");
 const bodyparser = require("body-parser");
 const foodfacilityController = require("./controller/foodfacilityController");
 const accountController = require("./controller/accountController");
+const specialistController = require("./controller/specialistController");
 const rewrite = require("express-urlrewrite");
 const auth = require("./middleware/auth");
 var bcrypt = require("bcryptjs");
@@ -128,6 +129,8 @@ app.use(rewrite("/tai-khoan/*", "/account/$1"), function (req, res, next) {
 app.use("/foodfacility", foodfacilityController);
 
 app.use("/account", accountController);
+app.use("/special",specialistController);
+
 
 app.all("*", (req, res) => {
   res.status(404).send("<h1>resouces not found</h1>");

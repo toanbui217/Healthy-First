@@ -103,14 +103,8 @@ router.post("/", (req, res) => {
     });
 });
 // lay danh sach co so
-router.get("/list", (req, res) => {
-  let query = null;
-  console.log(req.district);
-  // req.district=["dong_da","dong_anh","nam_tu_liem"];
-  console.log(req.district.length);
-  if (req.role == ROLE.BASIC) {
-    query = { "address.district": { $in: req.district } };
-  }
+router.get("/list",authRole(ROLE.ADMIN), (req, res) => {
+  
   //   redisClient.get("list",(error,list)=>{
   //       console.log(list);
   //       if(error) console.error(error)
@@ -122,30 +116,22 @@ router.get("/list", (req, res) => {
   //   })
   redisClient.get("list").then((data) => {
     // if (error) console.error(error);
-    //data != null
-    if (data != null && req.role != ROLE.BASIC) {
+    if (data!=null) {
       console.log("hit");
       return res.json(JSON.parse(data));
     } else {
+      //console.log("Error in retrieving foodfacility list :" + err);
       console.log("miss");
-      FoodFacility.find(query, (err, data) => {
-        if (!err) {
-          //       res.render("foodfacility/list", {
+      FoodFacility.find().then((data) => {
+        //       res.render("foodfacility/list", {
 
-          //                 list: docs.map((doc) => doc.toJSON()),
-          //       });
-          //  list: docs.map((doc) => doc.toJSON());
-          redisClient.setEx(
-            "list" + req.district,
-            DEFAULT_EXPIRATION,
-            JSON.stringify(data)
-          );
-          res.status(200).send(data);
+        //                 list: docs.map((doc) => doc.toJSON()),
+        //       });
+        //  list: docs.map((doc) => doc.toJSON());
+        redisClient.setEx("list", DEFAULT_EXPIRATION, JSON.stringify(data));
+        res.status(200).send(data);
 
-          //  res.json(docs.map((doc) => doc.toJSON()));
-        } else {
-          console.log("Error in retrieving foodfacility list :" + err);
-        }
+        //  res.json(docs.map((doc) => doc.toJSON()));
       });
     }
   });
@@ -444,7 +430,7 @@ router.get("/listfoodcertification", (req, res) => {
   //             MFG: { $gte: queryDate },
   //             expiration_date: { $lte: queryDate },status:'thu hoi'
   //   });
-  console.log(queryDate);
+  //console.log(queryDate);
   let query = null;
   if (req.role == ROLE.BASIC) {
     query = { "address.district": { $in: req.district } };
