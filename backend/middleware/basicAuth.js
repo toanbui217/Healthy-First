@@ -5,8 +5,8 @@ var bcrypt = require("bcryptjs");
 
 function authRole(role) {
           return (req, res, next) => {
-                    // console.log(req.role);
-                    console.log(role);
+                    // //console.log(req.role);
+                    //console.log(role);
                     if (req.role !== role) {
                               res.status(401);
                               return res.send("Not allowed");

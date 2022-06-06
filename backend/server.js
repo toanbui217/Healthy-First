@@ -31,6 +31,7 @@ app.use(bodyparser.json());
 app.use(filter());
 
 app.use(cookieParser());
+var refreshTokens=[];
 app.post("/login", (req, res) => {
   // const username = req.body.username;
   // const user = { name: username };
@@ -47,11 +48,10 @@ app.post("/login", (req, res) => {
 
   //   res.json({ accessToken: accessToken, refreshToken: refreshToken });
   const { username, password } = sanitize(req.body);
-  //   const refreshToken = jwt.sign(
-  //             username,
-  //             process.env.REFRESH_TOKEN_SECRET,
-  //             { expiresIn: "900h" }
-  //   );
+  // const refreshToken = jwt.sign(username, process.env.REFRESH_TOKEN_SECRET, {
+  //   expiresIn: "900h",
+  // });
+
   //   refreshTokens.push(refreshToken);
   //   console.log(refreshTokens);
   Account.findOne({ username })
@@ -76,7 +76,19 @@ app.post("/login", (req, res) => {
         process.env.ACCESS_TOKEN_SECRET,
         { expiresIn: expires + "s" }
       );
-
+      const refreshToken = jwt.sign(
+        { username: data.username },
+        process.env.REFRESH_TOKEN_SECRET,
+        { expiresIn: "900h" }
+      );
+      //refreshTokens.push(refreshToken);
+      //console.log(refreshTokens);
+      //req.refreshTokens=refreshTokens;
+       
+      res.cookie("refresh_token", token, {
+        expires: new Date(Date.now() + 1000 * expires),
+        httpOnly: true,
+      });
       res.cookie("token", token, {
         expires: new Date(Date.now() + 1000 * expires),
         httpOnly: true,

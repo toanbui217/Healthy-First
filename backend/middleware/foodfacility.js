@@ -6,9 +6,9 @@ var bcrypt = require("bcryptjs");
 const { ROLE } = require("../models/account.model");
 
 function canViewFoodFacility(req, foodfacility) {
-  //console.log("ket qua");
-  //console.log(req.district);
-  //console.log(foodfacility[0].address.district)
+  ////console.log("ket qua");
+  ////console.log(req.district);
+  ////console.log(foodfacility[0].address.district)
 
   return (
     req.role == ROLE.ADMIN ||

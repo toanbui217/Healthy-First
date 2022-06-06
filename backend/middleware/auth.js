@@ -4,35 +4,36 @@ const sanitize = require("mongo-sanitize");
 //acess token , refresh token
 exports.auth = async (req, res, next) => {
   req.body = sanitize(req.body);
-  console.log(req.body);
+  //console.log(req.cookies.token);
+  ////////////console.log(req.body);
   try {
-    // console.log("lol");
-    //console.log(req.headers.authorization);
+    // ////////////console.log("lol");
+    //////////////console.log(req.headers.authorization);
 
     const token = req.cookies.token;
-    console.log(req.cookies.district);
+    //////////console.log(req.cookies.district);
     const isCustomAuth = token.length < 500;
     req.role = req.cookies.role;
     req.district = req.cookies.district;
 
     //  req.district = req.headers.district;
     //req.district=["dong_da","dong_anh","nam_tu_liem"];
-    console.log(req.district.length);
+    //////////console.log(req.district.length);
     // req.district = req.district.replace("[", "");
     // req.district = req.district.replace("]", "");
     // req.district = req.district.replace(/"/g, "");
 
-    //  console.log(req.district.length);
-    //  console.log(req.district.split(",")[0]);
-    //console.log(req.headers.authorization);
-   // req.district = req.district.split(",");
-    //console.log(req.district);
-    //  console.log(req.district);
+    //  //////////console.log(req.district.length);
+    //  //////////console.log(req.district.split(",")[0]);
+    ////////////console.log(req.headers.authorization);
+    // req.district = req.district.split(",");
+    ////////////console.log(req.district);
+    //  //////////console.log(req.district);
     let decodedData;
 
     if (token && isCustomAuth) {
       decodedData = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-      //console.log()
+      //////////////console.log()
 
       req.userId = decodedData?.id;
     } else {
