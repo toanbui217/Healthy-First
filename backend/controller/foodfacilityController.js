@@ -31,8 +31,9 @@ router.get("/one/", auth.auth, (req, res) => {
     res.status(401).send({ error: error });
   }
 });
+
 //them 1 co so
-router.post("/", (req, res) => {
+router.post("/insert", (req, res) => {
   //403 là máy chủ hiểu nhưng không trả về gì
   if (
     req.role === ROLE.BASIC &&
@@ -61,8 +62,8 @@ router.post("/", (req, res) => {
     _id: ObjectId(),
     //req.body.certification_number
     certification_number: req.body.certification,
-
-    expiration_date: oneYearFromNow,
+    MFG: req.body.MFG,
+    expiration_date: req.body.expiration_date,
     status: "cap moi",
   });
   certi.save();
@@ -85,12 +86,9 @@ router.post("/", (req, res) => {
     waste_treatment: req.body.waste_treatment,
     owners: req.body.owners,
     processing: req.body.processing,
-    business_paper: req.body.business_paper,
     certification_number: req.body.certification,
     certification: certi._id,
   });
-  // foodfacility.save();
-  //foodfacility.save();
   foodfacility
     .save(foodfacility)
     .then((data) => {
@@ -102,52 +100,23 @@ router.post("/", (req, res) => {
       });
     });
 });
+
 // lay danh sach co so
 router.get("/list", authRole(ROLE.ADMIN), (req, res) => {
-  //   redisClient.get("list",(error,list)=>{
-  //       console.log(list);
-  //       if(error) console.error(error)
-  //       if(list!=null){
-  //           return res.json(JSON.parse(list))
-  //       }else{
-
-  //       }
-  //   })
   redisClient.get("list").then((data) => {
-    // if (error) console.error(error);
     if (data != null) {
       console.log("hit");
       return res.json(JSON.parse(data));
     } else {
-      //console.log("Error in retrieving foodfacility list :" + err);
       console.log("miss");
       FoodFacility.find().then((data) => {
-        //       res.render("foodfacility/list", {
-
-        //                 list: docs.map((doc) => doc.toJSON()),
-        //       });
-        //  list: docs.map((doc) => doc.toJSON());
         redisClient.setEx("list", DEFAULT_EXPIRATION, JSON.stringify(data));
         res.status(200).send(data);
-
-        //  res.json(docs.map((doc) => doc.toJSON()));
       });
     }
   });
 });
 
-//get ;ist limit 5
-//FoodFacility.findOne({ fullname: "cua hang oc" })
-//                .populate("certification")
-//                .exec(function (err, foodfacility) {
-//                          if (err) return console.log(
-//                               "Error during record insertion : " + err
-//                     );
-//                          console.log(foodfacility);
-//      });
-
-// Thống kê số lượng giấy chứng nhận cấp theo thời gian là loại hình cơ sở (sản xuất thực phẩm hay dịch vụ ăn uống).
-//629594da827fed9e0b8f2cd1  629594da827fed9e0b8f2cd1
 // Thống kê số lượng giấy chứng nhận cấp theo thời gian là loại hình cơ sở (sản xuất thực phẩm hay dịch vụ ăn uống).
 router.get("/listbusiness", (req, res) => {
   let query = null;
@@ -162,42 +131,15 @@ router.get("/listbusiness", (req, res) => {
       var result = data.filter(function (obj) {
         return obj.certification !== null; // Or whatever value you want to use
       });
-      //console.log(result);
-      //console.log(data[0].certification);
       res.status(200).send(result);
     })
     .catch((err) => {
       res.send(err);
     });
-  //   } else {
-  //             FoodFacility.find()
-  //                       .populate("certification", "MFG")
-  //                       .sort("MFG")
-  //                       // .exec(function (err, story) {
-  //                       //           if (err) return handleError(err);
-  //                       //           console.log(story);
-  //                       // });
-  //                       .then((data) => {
-  //                                 res.send(data);
-  //                       })
-  //                       .catch((err) => {
-  //                                 res.send(err);
-  //                       });
-  //   }
-  //neu muon theo san xuat hay dich vu thi them find nay
-  //   FoodFacility.find({ business_type: { $in: "kinh doanh" } })
-  //             .populate("certification").sort("MFG")
-  //             .then((data) => {
-  //                       res.send(data);
-  //             })
-  //             .catch((err) => {
-  //                       res.send(err);
-  //             });
 });
 
 // lay n ban ghi bat dau tu trang
 router.post("/listlimit", (req, res) => {
-  console.log(req.cookies);
   let start_date = req.body.start_date;
   let end_date = req.body.end_date;
   let page = req.body.page - 1;
@@ -208,36 +150,29 @@ router.post("/listlimit", (req, res) => {
   let search_type = req.body.search_type; // fullname hoac certification
   let temp = req.body.criteria_filter;
 
-  //chua phan quyen
   let query = {};
 
   if (req.role == ROLE.BASIC) {
-    query["address.district"] = req.district;
+    query["address.district"] = { $in: req.district };
   }
 
   if (business_type.length > 0) {
     query["business_type"] = { $all: business_type };
   }
 
-  if (search != "") {
-    query[search_type == "fullname" ? "fullname" : "certification_number"] = {
-      $regex: search,
-    };
-  }
-
   query[filter_type == "and" ? "$and" : "$or"] = [
-    { environment: temp.environment },
-    { appliances: temp.appliances },
-    { water_source: temp.water_source },
-    { ingredients: temp.ingredients },
-    {
-      food_preservation: temp.food_preservation,
-    },
-    {
-      waste_treatment: temp.waste_treatment,
-    },
-    { owners: temp.owners },
-    { processing: temp.processing },
+    temp.environment != undefined ? { environment: temp.environment } : {},
+    temp.appliances != undefined ? { appliances: temp.appliances } : {},
+    temp.water_source != undefined ? { water_source: temp.water_source } : {},
+    temp.ingredients != undefined ? { ingredients: temp.ingredients } : {},
+    temp.food_preservation != undefined
+      ? { food_preservation: temp.food_preservation }
+      : {},
+    temp.waste_treatment != undefined
+      ? { waste_treatment: temp.waste_treatment }
+      : {},
+    temp.owners != undefined ? { owners: temp.owners } : {},
+    temp.processing != undefined ? { processing: temp.processing } : {},
   ];
 
   FoodFacility.find(query)
@@ -520,6 +455,46 @@ router.post("/insertmultiple", (req, res) => {
   //  }
   ///createMultipleFoodFacilityFromArray(foodFacilityList);
 });
+
+// update co so trong foodfacility
+router.post("/update", (req, res) => {
+  FoodFacility.findOneAndUpdate(
+    {
+      id: req.body.id,
+    },
+    {
+      fullname: req.body.fullname,
+      address: req.body.address,
+      phone_number: req.body.phone_number,
+      business_type: req.body.business_type,
+      environment: req.body.environment,
+      appliances: req.body.appliances,
+      water_source: req.body.water_source,
+      ingredients: req.body.ingredients,
+      food_preservation: req.body.food_preservation,
+      waste_treatment: req.body.waste_treatment,
+      owners: req.body.owners,
+      processing: req.body.processing,
+    }
+  );
+
+  Certification.findOneAndUpdate(
+    {
+      id: req.body.certification.id,
+    },
+    {
+      certification_number: req.body.certification.certification_number,
+      MFG: req.body.certification.MFG,
+      expiration_date: req.body.certification.expiration_date,
+      status: req.body.certification.status,
+    }
+  );
+
+  res.status(200).send({
+    message: "FoodFacility and Certification info were updated successfully!",
+  });
+});
+
 //tao moi n giay phep
 ////update n co so
 router.post("/insertmultiplecer", authRole(ROLE.ADMIN), (req, res) => {

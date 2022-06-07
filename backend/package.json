@@ -34,7 +34,8 @@
     "mongo-sanitize": "^1.1.0",
     "mongodb-sanitize": "^2.2.0",
     "mongoose": "^6.3.1",
-    "nodemon": "^2.0.15"
+    "nodemon": "^2.0.15",
+    "redis": "^4.1.0"
   },
   "devDependencies": {
     "jest": "^28.1.0",

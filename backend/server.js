@@ -8,6 +8,7 @@ const exphbs = require("express-handlebars");
 const bodyparser = require("body-parser");
 const foodfacilityController = require("./controller/foodfacilityController");
 const accountController = require("./controller/accountController");
+const inspectionController = require("./controller/inspectionController");
 const specialistController = require("./controller/specialistController");
 const rewrite = require("express-urlrewrite");
 const auth = require("./middleware/auth");
@@ -31,7 +32,6 @@ app.use(bodyparser.json());
 app.use(filter());
 
 app.use(cookieParser());
-var refreshTokens=[];
 app.post("/login", (req, res) => {
   // const username = req.body.username;
   // const user = { name: username };
@@ -48,10 +48,11 @@ app.post("/login", (req, res) => {
 
   //   res.json({ accessToken: accessToken, refreshToken: refreshToken });
   const { username, password } = sanitize(req.body);
-  // const refreshToken = jwt.sign(username, process.env.REFRESH_TOKEN_SECRET, {
-  //   expiresIn: "900h",
-  // });
-
+  //   const refreshToken = jwt.sign(
+  //             username,
+  //             process.env.REFRESH_TOKEN_SECRET,
+  //             { expiresIn: "900h" }
+  //   );
   //   refreshTokens.push(refreshToken);
   //   console.log(refreshTokens);
   Account.findOne({ username })
@@ -70,22 +71,13 @@ app.post("/login", (req, res) => {
         });
       }
 
-      const expires = 3600000000; // tính theo giây
+      const expires = 30; // tính theo giây
       const token = jwt.sign(
         { username: data.username },
         process.env.ACCESS_TOKEN_SECRET,
         { expiresIn: expires + "s" }
       );
-      const refreshToken = jwt.sign(
-        { username: data.username },
-        process.env.REFRESH_TOKEN_SECRET,
-        { expiresIn: "900h" }
-      );
-      //refreshTokens.push(refreshToken);
-      //console.log(refreshTokens);
-      //req.refreshTokens=refreshTokens;
-       
-      res.cookie("refresh_token", token, {
+      res.cookie("username",data.username, {
         expires: new Date(Date.now() + 1000 * expires),
         httpOnly: true,
       });
@@ -120,8 +112,8 @@ app.post("/login", (req, res) => {
 
 app.use(auth.auth);
 
-app.listen(3000, () => {
-  console.log("Express server started at port :3000");
+app.listen(5000, () => {
+  console.log("Express server started at port :5000");
 });
 //rewirite chuan, dung , chinh xac
 app.use(rewrite("/co-so/*", "/foodfacility/$1"), function (req, res, next) {
@@ -139,7 +131,9 @@ app.use(rewrite("/tai-khoan/*", "/account/$1"), function (req, res, next) {
 app.use("/foodfacility", foodfacilityController);
 
 app.use("/account", accountController);
-app.use("/special", specialistController);
+app.use("/inspection", inspectionController);
+app.use("/specialist", specialistController);
+
 
 app.all("*", (req, res) => {
   res.status(404).send("<h1>resouces not found</h1>");

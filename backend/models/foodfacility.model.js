@@ -1,20 +1,11 @@
-//https://accgroup.vn/10-tieu-chi-ve-sinh-an-toan-thuc-pham/
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 var addressSchema = new mongoose.Schema({
   street: {
     type: String,
-    lowercase: true,
-    // validate: {
-    //     validator: v=>
-    // }
   },
   town: {
     type: String,
-    lowercase: true,
-    // validate: {
-    //     validator: v=>
-    // }
   },
   district: {
     type: String,
@@ -24,7 +15,7 @@ var addressSchema = new mongoose.Schema({
   },
   city: {
     type: String,
-    lowercase: true,
+    // lowercase: true,
     minlength: 5,
     maxlength: 30,
   },
@@ -38,30 +29,23 @@ var certificationSchema = new mongoose.Schema({
   MFG: {
     // ngay co chung chi khong the thay doi va co hieu luc luc no duoc tao ra
     type: Date,
-    //default: () => Date.now(),
-    //immutable: true,
   },
   expiration_date: {
     type: Date,
   },
-  //   ,
-  //   withdrawal_date: {
-  //             type: Date,
-  //   }
+
   status: {
     type: String,
   },
 });
+
 //fullname address phone_number business_type certification
 var foodfacilitySchema = new mongoose.Schema(
   {
-    id: {
-      type: String,
-    },
     fullname: {
       type: String,
       required: "This field is required.",
-      lowercase: true,
+      // lowercase: true,
     },
     address: addressSchema,
     phone_number: {
@@ -86,7 +70,6 @@ var foodfacilitySchema = new mongoose.Schema(
     waste_treatment: Boolean,
     owners: Boolean,
     processing: Boolean,
-    business_paper: Boolean,
     certification_number: {
       type: String,
       luppercase: true,
@@ -98,8 +81,8 @@ var foodfacilitySchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
 var checkfacilitySchema = new mongoose.Schema({
-  id: String,
   start_date: Date,
   food_sample: [
     {
@@ -115,7 +98,32 @@ var checkfacilitySchema = new mongoose.Schema({
 
   confirm: Boolean,
 
-  facility_id: String,
+  facility: {
+    id: String,
+    fullname: {
+      type: String,
+    },
+    certification_number: {
+      type: String,
+      luppercase: true,
+    },
+    business_type: {
+      //sản xuất thực phẩm và/hoặc dịch vụ ăn uống
+      type: [String],
+      lowercase: true,
+      // lieu 5 30 cua tung string hay cua ca
+      minlength: 5,
+      maxlength: 30,
+    },
+    environment: Boolean,
+    appliances: Boolean,
+    water_source: Boolean,
+    ingredients: Boolean,
+    food_preservation: Boolean,
+    waste_treatment: Boolean,
+    owners: Boolean,
+    processing: Boolean,
+  },
 
   specialist: String,
 });

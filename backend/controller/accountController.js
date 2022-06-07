@@ -7,18 +7,9 @@ const Account = mongoose.model("Account");
 var bcrypt = require("bcryptjs");
 const auth = require("../middleware/auth");
 const { authRole } = require("../middleware/basicAuth");
-// const {
-//           canViewFoodFacility,
-//           canDeleteFoodFacility,
-// } = require("../middleware/foodfacility");
 const FoodFacility = mongoose.model("FoodFacility");
 const { ROLE } = require("../models/account.model");
-
-//const FoodFacility = mongoose.model("FoodFacility");
-//const Certification = mongoose.model("Certification");
-const excelToJson = require("convert-excel-to-json");
-const ObjectId = require("mongodb").ObjectId;
-
+let refreshTokens = [];
 const saltRound = 10;
 function dateToPassword(date) {
   date = date.split("-");
@@ -59,32 +50,19 @@ function sortDate(noti1, noti2) {
   return bDateTime - aDateTime;
 }
 
-router.delete("/logout", (req, res) => {
-  console.log("lol");
-   //let temp=null;
-  //console.log(token);
-  // console.log(req.cookies.token)
-  // console.log(refreshTokens)
-  //req.refreshTokens = req.refreshTokens.filter((token) => token !== req.cookies.token);
-  //req.cookies.token = null;
-  //console.log(req.cookies.token);
-  // return  res.status(204).send("see you again");
-  res.cookie("token",null );
-  return res.status(204).send({
-    message: "see you again",
-  });
+// Logout
+router.post("/logout", (req, res) => {
+  res.clearCookie("token");
+  res.status(200).send({ message: "logout" });
+  res.end();
 });
+
 router.post("/token", (req, res) => {
   const refreshToken = req.body.token;
   console.log("refresh token la");
   console.log(refreshToken);
   if (refreshToken == null) return res.sendStatus(401);
   if (!refreshTokens.includes(refreshToken)) return res.sendStatus(403);
-  //   const token = jwt.sign(
-  //             { username: data.username },
-  //             process.env.REFRESH_TOKEN_SECRET,
-  //             { expiresIn: "900h" }
-  //   );
   jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
     if (err) {
       refreshTokens = refreshTokens.filter((token) => token !== refreshToken);
@@ -101,38 +79,29 @@ router.post("/token", (req, res) => {
 });
 
 // Tạo 1 tài khoản mới
-//router.post("/login", (req, res) =>
 router.post("/create/", authRole(ROLE.ADMIN), (req, res) => {
   if (
     !req.body.username ||
-    !req.body.password
-    // ||
-    // !req.body.firstName ||
-    // !req.body.surName ||
-    // !req.body.email ||
-    // !req.body.role ||
-    // !req.body.district
+    !req.body.password ||
+    !req.body.name ||
+    !req.body.email ||
+    !req.body.role ||
+    !req.body.district
   ) {
     res.status(400).send({
       message: "Necessary information can not be empty",
     });
     return;
   } else {
-    // Account.findOne({ username: req.body.username }).then(
-    //           async (data) => {
-    //                     console.log(data);
-    //           }
-    // );
-
     Account.findOne({ username: req.body.username })
       .then(async (data) => {
         if (!data) {
           const account = new Account({
             username: req.body.username,
             password: bcrypt.hashSync(req.body.password, saltRound),
-            firstName: req.body.firstName,
+            name: req.body.name,
             district: req.body.district,
-            surName: req.body.surName,
+
             email: req.body.email,
             messageOn: req.body.messageOn != null ? req.body.messageOn : true,
             avatarColor:
@@ -258,8 +227,8 @@ function createAccountFromStudent(student) {
             dateToPassword(student.birthday),
             saltRound
           ),
-          firstName: student.firstName,
-          surName: student.surName,
+          name: student.name,
+
           email: student.email,
           messageOn: true,
           avatarColor: randomAvatarColor(),
@@ -285,37 +254,20 @@ function createAccountFromStudent(student) {
 }
 
 // Tạo thông báo cho 1 tài khoản.=
-router.post("/createNotification/:id", authRole(ROLE.ADMIN), (req, res) => {
-  if (
-    !req.body.title ||
-    !req.body.message ||
-    req.body.title == "" ||
-    req.body.message == ""
-  ) {
-    return res.status(400).send({
-      message: "Notification can not be empty!",
-    });
+router.post("/update", authRole(ROLE.ADMIN), (req, res) => {
+  var specialistList = req.body;
+
+  for (let spec of specialistList) {
+    Account.findByIdAndUpdate(spec.id, { district: spec.district }).then(
+      (data) => {
+        // console.log(data);
+      }
+    );
   }
 
-  const accountId = req.params.id;
-  const tempNotification = {
-    read: false,
-    title: req.body.title,
-    message: req.body.message,
-    createdTime: getCurrentDateTimeString(),
-  };
-
-  Account.findOneAndUpdate(
-    { _id: accountId },
-    { $push: { notification: tempNotification } },
-    { useFindAndModify: false }
-  )
-    .then((data) => {
-      res.status(200).send("Created a new notification!");
-    })
-    .catch((err) => {
-      res.status(401).send("Error when create new notification");
-    });
+  res.send({
+    message: "successfully updated " + specialistList.length + " specialists",
+  });
 });
 
 // Xóa 1 thông báo của 1 tài khoản.
