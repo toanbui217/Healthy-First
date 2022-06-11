@@ -2,8 +2,8 @@
   flex: 1;
   min-width: max-content;
   overflow: hidden;
-  padding-left: 30px;
-  padding-right: 30px;
+  padding-left: 42px;
+  padding-right: 42px;
   margin-left: auto;
   margin-right: auto;
   height: 90vh;
@@ -18,13 +18,23 @@
   padding-bottom: 16px;
 }
 
-.settings__header>div>.settings__darkMode {
-  padding-left: 12px;
+.settings_wrapper {
+  display: flex;
+  flex-direction: column;
 }
 
-.settings__header>div>h2 {
+.settings_wrapper>.settings__darkMode {
+  margin-left: -6px;
+  margin-bottom: 16px;
+}
+
+.settings_wrapper>h2 {
   font-weight: 500;
   font-size: 26px;
-  padding: 24px 12px 20px;
+  padding: 24px 0 20px;
   color: var(--app-black);
+}
+
+.setting_logout {
+  width: fit-content;
 }

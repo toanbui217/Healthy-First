@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import Switch from "@mui/material/Switch";
+import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
+import Button from "@mui/material/Button";
 import "./Settings.css";
 
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
@@ -73,10 +75,25 @@ function Settings() {
     setDarkMode(checked);
   };
 
+  const handleLogout = () => {
+    fetch("/account/logout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        localStorage.removeItem("user");
+        window.location.reload(); // reload to route to Login page
+      });
+  };
+
   return (
     <div className="settings">
       <div className="settings__header">
-        <div>
+        <div className="settings_wrapper">
           <h2>Settings</h2>
           <MaterialUISwitch
             className={"settings__darkMode"}
@@ -84,6 +101,10 @@ function Settings() {
             theme={{ palette: { mode: darkMode ? "dark" : "light" } }}
             onChange={handleChangeMode}
           />
+          <Button className="home__add setting_logout" onClick={handleLogout}>
+            <LogoutRoundedIcon />
+            Đăng xuất
+          </Button>
         </div>
       </div>
     </div>

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import SidebarOption from "./SidebarOption";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
-import FindInPageRoundedIcon from "@mui/icons-material/FindInPageRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import KeyboardDoubleArrowLeftRoundedIcon from "@mui/icons-material/KeyboardDoubleArrowLeftRounded";
@@ -26,11 +25,6 @@ function Sidebar() {
       </div>
 
       <SidebarOption Icon={HomeRoundedIcon} text={"Home"} path={"/"} />
-      <SidebarOption
-        Icon={FindInPageRoundedIcon}
-        text={"Detail"}
-        path={"/detail"}
-      />
 
       <SidebarOption
         Icon={ViewTimelineRoundedIcon}

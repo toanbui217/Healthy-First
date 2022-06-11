@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import AllInclusiveOutlinedIcon from "@mui/icons-material/AllInclusiveOutlined";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -7,62 +6,68 @@ import TextField from "@mui/material/TextField";
 import "./Login.css";
 
 function Login() {
-  const user = useSelector((state) => state.userReducer);
-  const dispatch = useDispatch();
-
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState(false);
 
   const handleChangeEmail = (e) => {
-    if (e.target.value != "") {
-      setLoginError(false);
-    }
-    setEmail(e.target.value);
+    setLoginError(false);
+    setUsername(e.target.value);
   };
 
   const handleChangePassword = (e) => {
-    if (e.target.value != "") {
-      setLoginError(false);
-    }
+    setLoginError(false);
     setPassword(e.target.value);
   };
 
   const handleLogin = () => {
-    if (email == user.email && password == user.password) {
-      dispatch({
-        type: "SET_USER",
-        payload: {
-          ...user,
-          active: true,
-        },
+    var data = { username: username, password: password };
+    console.log(data);
+    fetch("/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data != {}) {
+          localStorage.setItem("user", JSON.stringify(data));
+          window.location.reload(); // reload to route to Login page
+          setUsername("");
+          setPassword("");
+        } else {
+          setLoginError(true);
+        }
+      })
+      .catch((e) => {
+        console.log(e);
+        setLoginError(true);
       });
-    } else {
-      setEmail("");
-      setPassword("");
-      setLoginError(true);
-    }
   };
 
   return (
     <div className="login">
       <div className="login__container">
         <div className="login__left">
-          <h2>Login</h2>
+          <h2>Đăng nhập</h2>
           <TextField
-            placeholder="admin@gmail.com"
-            type={"email"}
+            placeholder="admin"
+            type={"text"}
             id="outlined-disabled"
-            label="Address e-mail"
+            label="Username"
             className="login__textfield"
             color="secondary"
             size="small"
             focused
             fullWidth
-            value={email}
+            value={username}
             onChange={handleChangeEmail}
-            error={loginError}
-            helperText={loginError && "Incorrect address e-mail"}
+            error={loginError && username == ""}
+            helperText={
+              loginError && username == "" && "Tên đăng nhập không đúng"
+            }
             inputProps={{ className: "login__textfield__input" }}
           />
           <TextField
@@ -77,8 +82,8 @@ function Login() {
             fullWidth
             value={password}
             onChange={handleChangePassword}
-            error={loginError}
-            helperText={loginError && "Incorrect password"}
+            error={loginError && password == ""}
+            helperText={loginError && password == "" && "Mật khẩu không đúng"}
             inputProps={{ className: "login__textfield__input" }}
           />
           <div className="login__button__container">

@@ -1,26 +1,377 @@
-.schedule {
+.sched {
   flex: 1;
-  min-width: max-content;
-  overflow: hidden;
-  padding-left: 30px;
-  padding-right: 30px;
+  display: flex;
   margin-left: auto;
   margin-right: auto;
-  height: 90vh;
   background-color: var(--app-coconut);
+  overflow: hidden;
 }
 
-.schedule__header {
+
+
+/* Left */
+.sched_left {
+  padding: 20px 15px 0 30px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  width: 220px;
+  min-width: 220px;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.sched_left::-webkit-scrollbar,
+.sched_right::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.sched_left,
+.sched_right {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+
+
+/* Right */
+.sched_right {
+  padding: 20px 30px 5px 15px;
+  flex: 1;
+  overflow-y: scroll;
+}
+
+
+
+/* Bot */
+.sched_bot {
+  display: flex;
+  padding-top: 20px;
+}
+
+
+
+/* Bot Left */
+.sched_bot_left {
+  flex: 1;
+}
+
+
+
+/* Bot Right */
+.sched_bot_right {
+  margin: 0 0 20px 30px;
+
+}
+
+
+
+/* On going */
+.sched_ongoing {
+  border-radius: 12px;
+  width: 220px;
+  height: 260px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  box-shadow: var(--app-shadow-dark) 1px 2px 7px 0.5px;
+  background-color: var(--app-white);
+  margin-bottom: 20px;
+}
+
+.sched_ongoing_header {
+  background-color: var(--app-white);
+  box-shadow: var(--app-shadow-dark) 1px 2px 7px 0.5px;
   position: sticky;
+  padding: 8px 14px 10px;
   top: 0;
-  z-index: 100;
-  background-color: var(--app-coconut);
-  padding-bottom: 16px;
+  z-index: 999;
 }
 
-.schedule__header>div>h2 {
-  font-weight: 500;
-  font-size: 26px;
-  padding: 24px 12px 20px;
+.sched_ongoing_header>h2 {
   color: var(--app-black);
+  font-weight: 500;
+  font-size: 22px;
+}
+
+.sched_ongoing_body {
+  box-shadow: var(--app-shadow-dark) 1px 2px 7px 0.5px;
+  background-color: var(--app-coconut);
+  margin: 10px 14px;
+  padding: 6px 10px 8px;
+  border-radius: 12px;
+  color: var(--app-blackberry);
+}
+
+.sched_ongoing_body:hover {
+  background-color: var(--app-grape);
+}
+
+.sched_ongoing_body .sched_ongoing_name {
+  margin-bottom: 4px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.sched_ongoing_body .sched_ongoing_number {
+  font-size: 12px;
+  color: gray;
+}
+
+.sched_ongoing_body .sched_ongoing_spec {
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--app-blueberry);
+  align-items: center;
+  display: flex;
+}
+
+.sched_ongoing_body .sched_ongoing_spec>.MuiSvgIcon-root {
+  font-size: 18px;
+  margin-right: 2px;
+}
+
+
+/* Top */
+.sched_top {
+  display: flex;
+}
+
+
+/* Specialist */
+.sched_spec_btn {
+  font-size: 14px !important;
+  min-width: max-content !important;
+  color: white !important;
+  padding: 6px 16px !important;
+  margin-right: 8px !important;
+  text-transform: none !important;
+  border-radius: 8px !important;
+  background-color: var(--app-blueberry) !important;
+  box-shadow: var(--app-shadow-light) 0px 2px 7px -3px;
+}
+
+.sched_spec_dist {
+  padding: 15px 20px;
+  background-color: var(--app-white);
+  width: 60vw;
+  min-width: min-content;
+  max-height: 60vh;
+  height: max-content;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+  border-radius: 12px;
+  box-shadow: var(--app-shadow-dark) 0px 0px 16px 1px;
+  overflow-y: scroll;
+}
+
+.sched_spec_dist>h2 {
+  font-size: 22px;
+  font-weight: 600;
+  min-width: max-content;
+  color: var(--app-black);
+  margin-bottom: 14px;
+  margin-left: 3px;
+}
+
+.sched_spec_dist>span {
+  padding: 4px 8px;
+  margin: 1px 1px;
+  border-radius: 6px;
+  display: inline-block;
+  background-color: var(--app-grape);
+  font-size: 12px;
+  color: var(--app-black);
+}
+
+.sched_spec_el {
+  margin-left: 4px;
+  display: inline-block;
+  border: 1.5px solid #7d114a;
+  width: 15px;
+  height: 15px;
+  border-radius: 20px;
+  text-align: center;
+  color: #7d114a;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+.sched_spec_el:hover {
+  background-color: #f393c6;
+}
+
+.sched_spec_el--active {
+  background-color: #7d114a;
+  color: #ffdee6;
+}
+
+
+
+/* Assignment */
+.sched_asgmt_btn {
+  font-size: 14px !important;
+  min-width: max-content !important;
+  color: var(--app-blueberry) !important;
+  padding: 4.5px 16px !important;
+  text-transform: none !important;
+  border-radius: 8px !important;
+  border: 1.5px solid var(--app-blueberry) !important;
+  box-shadow: var(--app-shadow-light) 0px 2px 7px -3px;
+}
+
+.sched_asgmt_btn>.MuiSvgIcon-root {
+  font-size: 18px;
+  margin-right: 4px;
+}
+
+.sched_asgmt_btn_save {
+  display: flex !important;
+  margin-top: 10px !important;
+}
+
+
+/* Facility */
+.sched_fac {
+  border-radius: 12px;
+  margin: 0 0 20px;
+  padding: 15px 20px;
+  background-color: var(--app-white);
+  box-shadow: var(--app-shadow) 0px 2px 10px 2px;
+}
+
+.sched_fac_table {
+  margin-bottom: 10px;
+}
+
+.sched_fac_table .MuiRadio-root {
+  color: var(--app-blueberry) !important;
+  padding: 0 2px 0 0 !important;
+}
+
+.sched_fac_table .MuiRadio-root .MuiSvgIcon-root {
+  padding: 2px !important;
+  margin-top: -6px !important;
+}
+
+.sample_ensure {
+  color: rgb(0, 255, 213);
+
+}
+
+.sample_not_ensure {
+  color: rgb(233, 44, 30);
+}
+
+.sched_fac_input {
+  color: var(--app-gray);
+  background-color: var(--app-white);
+  font-size: 12px;
+}
+
+.sched_fac tr {
+  vertical-align: middle;
+}
+
+.sched_fac td {
+  padding: 4px;
+  font-size: 12px;
+  color: var(--app-black);
+}
+
+.sched_fac td:first-child {
+  font-weight: 600;
+  padding-right: 30px;
+}
+
+.sched_fac td>span {
+  background-color: var(--app-grape);
+  border-radius: 6px;
+  padding: 6px 4px 6px 8px;
+  margin: 0 4px 0 0;
+}
+
+.sched_fac .ensure {
+  color: rgb(0, 255, 213);
+  font-size: 22px;
+  margin: 0 2px -6px 0;
+}
+
+.sched_fac .not_ensure {
+  color: rgb(233, 44, 30);
+  font-size: 20px;
+  margin: 0 2px -6px 0;
+}
+
+.sched_fac>h2 {
+  color: var(--app-black);
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.sched_fac_status {
+  margin-left: -2px;
+}
+
+
+
+/* Facility After */
+.sched_fac_after_sample {
+  margin: 20px 0 15px;
+}
+
+.sched_fac_after_sample>span {
+  color: var(--app-black);
+  font-weight: 600;
+  text-transform: uppercase;
+  margin: 0 15px 0 2px;
+  font-size: 12px;
+}
+
+.sched_fac_after_add {
+  font-size: 10px !important;
+  min-width: max-content !important;
+  color: var(--app-blueberry) !important;
+  padding: 0 6px !important;
+  text-transform: none !important;
+  border-radius: 4px !important;
+  border: 1.5px solid var(--app-blueberry) !important;
+  box-shadow: var(--app-shadow-light) 0px 2px 7px -3px;
+}
+
+.sched_fac_after_add .MuiSvgIcon-root {
+  font-size: 14px;
+  margin-right: 4px;
+}
+
+.sched_fac_after_sample tr {
+  cursor: pointer;
+}
+
+
+
+/* Sample Food */
+.sched_sample {
+  margin: 10px 0 0;
+}
+
+.sched_sample td {
+  color: var(--app-gray);
+  padding: 1px;
+}
+
+
+
+/* Command Button */
+.sched_cmd_btn {
+  display: flex;
+  flex-direction: column;
+}
+
+.sched_cmd_btn>.MuiButton-root {
+  margin-bottom: 8px;
 }

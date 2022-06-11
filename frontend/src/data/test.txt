@@ -1,0 +1,27 @@
+* Hàm POST "/foodfacility/list":
+  * Mục đích: trả về 1 mảng các cơ sở theo các tham số nhận được
+  * Tham số nhận: 
+    {
+      start_date: "2022-09-21T12:00:00Z",// ngày bắt đầu lọc
+      end_date: ,// ngày kết thúc lọc
+      page: , // page hiện tại đang show cho người dùng thấy
+      limit: , // số lượng cơ sở trong 1 page 
+      search: , // kí tự tìm kiếm
+      criteriaFilter: { // các thuộc tính cần lọc
+        environment: ,
+        appliances: ,
+        water_source: ,
+        ingredients: ,
+        food_preservation: ,
+        waste_treatment: ,
+        owners: ,
+        processing: ,
+      },
+      filterType: , // có giá trị "and" hoặc "or": kiểu lọc 
+      searchType: , // có giá trị "fullname" hoặc "certification": kiểu search theo tên cơ sở hoặc số giấy chứng nhận
+    } 
+  * Tham số trả về:
+    {
+      facilities:[thông tin các cơ sở],
+      total: // số lượng cơ sở thỏa mãn
+    }

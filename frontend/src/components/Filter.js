@@ -4,12 +4,13 @@ import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Tooltip from "@mui/material/Tooltip";
 import ClearRoundedIcon from "@mui/icons-material/ClearRounded";
+import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import Button from "@mui/material/Button";
 import "./Filter.css";
 
 const maxWord = 5;
 
-function Filter({ title, choices, criteria, onChange, filter }) {
+function Filter({ title, criteria, onChange, filter }) {
   const [value, setValue] = useState(criteria[filter]);
 
   useEffect(() => {
@@ -17,7 +18,7 @@ function Filter({ title, choices, criteria, onChange, filter }) {
   }, [criteria]);
 
   const handleChange = (e) => {
-    var value = e.target.value;
+    var value = e.target.value == "true";
     setValue(value);
     onChange(value, filter);
   };
@@ -37,7 +38,7 @@ function Filter({ title, choices, criteria, onChange, filter }) {
               : title}
           </h2>
         </Tooltip>
-        {value && (
+        {value != undefined && (
           <Button className="filter__remove" onClick={removeChoose}>
             <ClearRoundedIcon />
           </Button>
@@ -45,20 +46,30 @@ function Filter({ title, choices, criteria, onChange, filter }) {
       </div>
 
       <RadioGroup name={"filter"} className={"filter__choices"}>
-        {choices.map((item, index) => (
-          <FormControlLabel
-            key={index}
-            control={
-              <Radio
-                checked={value == index}
-                value={index}
-                onChange={handleChange}
-                size="small"
-              />
-            }
-            label={item}
-          />
-        ))}
+        <FormControlLabel
+          control={
+            <Radio
+              checked={value == true}
+              value={"true"}
+              onChange={handleChange}
+              size="small"
+            />
+          }
+          label={<CheckRoundedIcon />}
+          classes={{ label: "filter__ensure" }}
+        />
+        <FormControlLabel
+          control={
+            <Radio
+              checked={value == false}
+              value={"false"}
+              onChange={handleChange}
+              size="small"
+            />
+          }
+          label={<ClearRoundedIcon />}
+          classes={{ label: "filter__not-ensure" }}
+        />
       </RadioGroup>
     </div>
   );

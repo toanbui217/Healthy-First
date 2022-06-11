@@ -35,7 +35,7 @@ input {
   font-family: 'Lexend Deca', sans-serif !important;
   font-weight: 400;
   text-decoration: none;
-  transition: background-color 400ms ease-out;
+  transition: background-color 300ms ease-out;
 }
 
 body {
