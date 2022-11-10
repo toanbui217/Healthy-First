@@ -12,13 +12,13 @@ const auth = require("../middleware/auth");
 const { authRole } = require("../middleware/basicAuth");
 const { ROLE } = require("../models/account.model");
 
-router.get("/one/", auth.auth, (req, res) => {
-  try {
-    res.status(200).send({ message: "Success author" });
-  } catch (error) {
-    res.status(401).send({ error: error });
-  }
-});
+// router.get("/one/", auth.auth, (req, res) => {
+//   try {
+//     res.status(200).send({ message: "Success author" });
+//   } catch (error) {
+//     res.status(401).send({ error: error });
+//   }
+// });
 
 // ke hoach thanh tra
 router.post("/plan", authRole(ROLE.ADMIN), (req, res) => {

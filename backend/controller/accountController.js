@@ -159,9 +159,9 @@ router.delete("/delete/:id", authRole(ROLE.ADMIN), (req, res) => {
       });
     });
 });
-
+//authRole(ROLE.ADMIN),
 // Đổi mật khẩu hoặc cập nhật thông tin tùy request
-router.post("/update/:id", authRole(ROLE.ADMIN), (req, res) => {
+router.post("/update/:id",  (req, res) => {
   if (req.body.constructor === Object && Object.keys(req.body).length === 0) {
     return res.status(400).send({
       message: "Data to update can not be empty!",
@@ -217,81 +217,6 @@ router.get("/get/:id", (req, res) => {
     });
 });
 
-function createAccountFromStudent(student) {
-  Account.findOne({ username: student.studentID })
-    .then((data) => {
-      if (!data) {
-        const account = new Account({
-          username: student.studentID,
-          password: bcrypt.hashSync(
-            dateToPassword(student.birthday),
-            saltRound
-          ),
-          name: student.name,
-
-          email: student.email,
-          messageOn: true,
-          avatarColor: randomAvatarColor(),
-          notification: [],
-          role: "",
-        });
-
-        account
-          .save(account)
-          .then((data) => {
-            //console.log(data);
-          })
-          .catch((err) => {
-            console.log("Error when create data");
-          });
-      } else {
-        console.log("Account for this student is exist");
-      }
-    })
-    .catch((err) => {
-      console.log("Error when create account from student");
-    });
-}
-
-// Tạo thông báo cho 1 tài khoản.=
-router.post("/update", authRole(ROLE.ADMIN), (req, res) => {
-  var specialistList = req.body;
-
-  for (let spec of specialistList) {
-    Account.findByIdAndUpdate(spec.id, { district: spec.district }).then(
-      (data) => {
-        // console.log(data);
-      }
-    );
-  }
-
-  res.send({
-    message: "successfully updated " + specialistList.length + " specialists",
-  });
-});
-
-// Xóa 1 thông báo của 1 tài khoản.
-router.delete("/deleteNotification/", authRole(ROLE.ADMIN), (req, res) => {
-  const accountId = req.body.accountId;
-  const notificationId = req.body.notificationId;
-
-  Account.findOneAndUpdate(
-    { _id: accountId },
-    { $pull: { notification: { _id: notificationId } } },
-    { safe: true, multi: false }
-  )
-    .then((data) => {
-      res.status(200).send({
-        message: "Deleted notification",
-      });
-    })
-    .catch((error) => {
-      res.status(500).send({
-        message: `Error when delete comment ${error}`,
-      });
-    });
-});
-
 // Lấy danh sách tất cả các object model tài khoản.
 router.get("/getAll/", authRole(ROLE.ADMIN), (req, res) => {
   Account.find()
@@ -336,24 +261,10 @@ router.get("/getByUsername/:username", (req, res) => {
       });
     });
 });
-// Xóa tât cả các tài khoản .
-router.delete("/delete/", authRole(ROLE.ADMIN), (req, res) => {
-  Account.deleteMany({})
-    .then((data) => {
-      res.send({
-        message: `${data.deletedCount} All Accoumt info were deleted successfully!`,
-      });
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while removing all Accoumt.",
-      });
-    });
-});
+
 
 // Xóa tât cả các tài khoản trừ mamnager va ADMIN.
-router.delete("/deleteStudent/", authRole(ROLE.ADMIN), (req, res) => {
+router.delete("/delete_specialist/", authRole(ROLE.ADMIN), (req, res) => {
   Account.deleteMany({ role: ["", "SPECIALIST"] })
     .then((data) => {
       res.send({
@@ -365,31 +276,6 @@ router.delete("/deleteStudent/", authRole(ROLE.ADMIN), (req, res) => {
         message:
           err.message ||
           "Some error occurred while removing all student account.",
-      });
-    });
-});
-
-// lấy thông báo của 1 tài khoản từ id.
-router.get("/getNotification/:id", authRole(ROLE.ADMIN), (req, res) => {
-  if (!req.params.id) {
-    return res.status(400).send({ message: "Username be filled in" });
-  }
-
-  Account.findById(req.params.id)
-    .sort({ notification: -1 })
-    .then((data) => {
-      if (!data) {
-        res.status(404).send({
-          message: `There is no account with id: ${req.params.id}`,
-        });
-      } else {
-        let dataRes = data.notification.sort(sortDate);
-        res.status(200).send(dataRes);
-      }
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: "Error when get data",
       });
     });
 });

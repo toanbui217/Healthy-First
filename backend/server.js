@@ -110,10 +110,10 @@ app.post("/login", (req, res) => {
     });
 });
 
-app.use(auth.auth);
+//app.use(auth.auth);
 
-app.listen(5000, () => {
-  console.log("Express server started at port :5000");
+app.listen(3000, () => {
+  console.log("Express server started at port :3000");
 });
 //rewirite chuan, dung , chinh xac
 app.use(rewrite("/co-so/*", "/foodfacility/$1"), function (req, res, next) {

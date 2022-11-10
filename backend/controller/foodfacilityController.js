@@ -16,21 +16,13 @@ const {
 const { ROLE } = require("../models/account.model");
 const { Admin } = require("mongodb");
 
-const Redis = require("redis");
+//const Redis = require("redis");
 const DEFAULT_EXPIRATION = 3600000;
-const redisClient = Redis.createClient();
-const step = async (_) => {
-  await redisClient.connect();
-};
-step();
-
-router.get("/one/", auth.auth, (req, res) => {
-  try {
-    res.status(200).send({ message: "Success author" });
-  } catch (error) {
-    res.status(401).send({ error: error });
-  }
-});
+// const redisClient = Redis.createClient();
+// const step = async (_) => {
+//   await redisClient.connect();
+// };
+// step();
 
 //them 1 co so
 router.post("/insert", (req, res) => {
@@ -103,17 +95,9 @@ router.post("/insert", (req, res) => {
 
 // lay danh sach co so
 router.get("/list", authRole(ROLE.ADMIN), (req, res) => {
-  redisClient.get("list").then((data) => {
-    if (data != null) {
-      console.log("hit");
-      return res.json(JSON.parse(data));
-    } else {
-      console.log("miss");
-      FoodFacility.find().then((data) => {
-        redisClient.setEx("list", DEFAULT_EXPIRATION, JSON.stringify(data));
-        res.status(200).send(data);
-      });
-    }
+  FoodFacility.find().then((data) => {
+   // redisClient.setEx("list", DEFAULT_EXPIRATION, JSON.stringify(data));
+    res.status(200).send(data);
   });
 });
 
@@ -456,44 +440,6 @@ router.post("/insertmultiple", (req, res) => {
   ///createMultipleFoodFacilityFromArray(foodFacilityList);
 });
 
-// update co so trong foodfacility
-router.post("/update", (req, res) => {
-  FoodFacility.findOneAndUpdate(
-    {
-      id: req.body.id,
-    },
-    {
-      fullname: req.body.fullname,
-      address: req.body.address,
-      phone_number: req.body.phone_number,
-      business_type: req.body.business_type,
-      environment: req.body.environment,
-      appliances: req.body.appliances,
-      water_source: req.body.water_source,
-      ingredients: req.body.ingredients,
-      food_preservation: req.body.food_preservation,
-      waste_treatment: req.body.waste_treatment,
-      owners: req.body.owners,
-      processing: req.body.processing,
-    }
-  );
-
-  Certification.findOneAndUpdate(
-    {
-      id: req.body.certification.id,
-    },
-    {
-      certification_number: req.body.certification.certification_number,
-      MFG: req.body.certification.MFG,
-      expiration_date: req.body.certification.expiration_date,
-      status: req.body.certification.status,
-    }
-  );
-
-  res.status(200).send({
-    message: "FoodFacility and Certification info were updated successfully!",
-  });
-});
 
 //tao moi n giay phep
 ////update n co so
@@ -936,15 +882,6 @@ router.get(
   }
 );
 
-router.delete(
-  "/:district",
-  setFoodFacility,
-  authGetFoodFacility,
-  (req, res) => {
-    //console.log(req.foodfacility);
-    //  res.send(req.foodfacility);
-  }
-);
 function setFoodFacility(req, res, next) {
   const district = req.params.district;
   //console.log(district);
